@@ -26,7 +26,6 @@ nsurvs <- dim(y)[2]
 #--------------------- capture-recapture data -----------------------------#
 # Capture-recapture data structure : rows = individuals; columns = capture occasions
 mydata <- read.table("capture-recapture-data.txt", header = FALSE) # load capture-recapture data
-mydata <- matrix(mydata)
 extra <- 250 # define large number of extra individual capture histories
 n <- nrow(mydata) # number of observed individuals
 M <- extra + n
