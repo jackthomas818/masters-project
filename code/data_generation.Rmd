@@ -12,32 +12,48 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r define}
 # number of sites in the study
-nsites <- 0
+nsites <- 2
 
 # number of individuals in capture history
-n <- 0
+n <- 100
 
-# number of sampling occasions 
-nample <- 0
+# number of sampling occasions
+nsample <- 5
 
 # actual population
 N <- 0
 
 # capture probability
-p <- 0
+p <- 0.5
 
 # occupancy probability
 occup <- 0
-
 ```
 
 ```{r datagen}
 
+# seed set for testing purposes only
+set.seed(1234)
+
+
+# empty capture history matrix
+cap_hist <- array(NA, dim = c(n, nsample))
 
 # Capture history generation
+for (i in 1:n) {
+  for (j in 1:nsample){
+    rv <- runif(1)
+    if(p <= rv){
+      cap_hist[i,j] <- 1
+    }
+    else{
+      cap_hist[i,j] <- 0
+    }
+  }
+}
+
+
 
 
 # Presence absence generation
-
-
 ```
