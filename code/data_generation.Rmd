@@ -1,0 +1,43 @@
+---
+title: "data_generation"
+author: "Jack Thomas"
+date: "5/9/2022"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+```{r define}
+# number of sites in the study
+nsites <- 0
+
+# number of individuals in capture history
+n <- 0
+
+# number of sampling occasions 
+nample <- 0
+
+# actual population
+N <- 0
+
+# capture probability
+p <- 0
+
+# occupancy probability
+occup <- 0
+
+```
+
+```{r datagen}
+
+
+# Capture history generation
+
+
+# Presence absence generation
+
+
+```
