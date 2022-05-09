@@ -11,12 +11,12 @@ library(rjags)
 
 #---------------------- patch occupancy data ----------------------------#
 # Presence-absence data structure: rows = sites; columns = occasions
-y <- read.csv("your-presence-absence-data.csv") # load presence-absence data
+y <- read.csv("presence-absence-data.csv") # load presence-absence data
 nsites <- dim(y)[1]
 nsurvs <- dim(y)[2]
 #--------------------- capture-recapture data -----------------------------#
 # Capture-recapture data structure : rows = individuals; columns = capture occasions
-mydata <- read.table("your-capture-recapture-data.txt") # load capture-recapture data
+mydata <- read.table("capture-recapture-data.txt") # load capture-recapture data
 mydata <- matrix(mydata)
 extra <- 250 # define large number of extra individual capture histories
 n <- nrow(mydata) # number of observed individuals

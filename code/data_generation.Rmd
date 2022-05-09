@@ -9,6 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+Data generation for Blanc et al. model.
 
 ```{r define}
 # number of sites in the study
@@ -62,7 +63,13 @@ for (i in 1:n) {
       rsite <- sample(1:nsites, 1)
       # assign a 1 at capture occasion j
       pres_abs[rsite, j] <- 1
-    } 
+    }
   }
 }
+```
+
+```{r output}
+# write data to files
+write(cap_hist, file = "capture-recapture-data.txt")
+write.table(pres_abs, file = "presence-absence-data.csv", col.names = FALSE, row.names = FALSE, sep = ",")
 ```
