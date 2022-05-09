@@ -12,10 +12,10 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ```{r define}
 # number of sites in the study
-nsites <- 2
+nsites <- 10
 
 # number of individuals in capture history
-n <- 100
+n <- 10
 
 # number of sampling occasions
 nsample <- 5
@@ -39,21 +39,30 @@ set.seed(1234)
 # empty capture history matrix
 cap_hist <- array(NA, dim = c(n, nsample))
 
+# empty presence-absence matrix
+pres_abs <- array(0, dim = c(nsites, nsample))
+
 # Capture history generation
 for (i in 1:n) {
-  for (j in 1:nsample){
+  for (j in 1:nsample) {
     rv <- runif(1)
-    if(p <= rv){
-      cap_hist[i,j] <- 1
-    }
-    else{
-      cap_hist[i,j] <- 0
+    if (p <= rv) {
+      cap_hist[i, j] <- 1
+    } else {
+      cap_hist[i, j] <- 0
     }
   }
 }
 
-
-
-
-# Presence absence generation
+# Presence-absence generation
+for (i in 1:n) {
+  for (j in 1:nsample) {
+    if (cap_hist[i, j] == 1) {
+      # pick random site
+      rsite <- sample(1:nsites, 1)
+      # assign a 1 at capture occasion j
+      pres_abs[rsite, j] <- 1
+    } 
+  }
+}
 ```
