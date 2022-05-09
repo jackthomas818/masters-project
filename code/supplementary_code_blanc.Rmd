@@ -1,3 +1,15 @@
+---
+title: "supplementary_code_blanc"
+author: "Jack Thomas"
+date: "5/9/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+```{r all}
 # Supplementary Information for Blanc et al.
 # Improving abundance estimation by combining capture-recapture and occupancy data:
 # example with a large carnivore
@@ -5,9 +17,6 @@
 # Load packages
 library(coda)
 library(rjags)
-
-# Setup directory
-# setwd(“your-directory”)
 
 #---------------------- patch occupancy data ----------------------------#
 # Presence-absence data structure: rows = sites; columns = occasions
@@ -95,3 +104,6 @@ inits <- list(init1, init2, init3)
 #-------------------- Call jags from R -----------------------#
 jmodel <- jags.model("CRandPO_HET.txt", mydatax, inits, n.chains = 3, n.adapt = 2500)
 jsample <- coda.samples(jmodel, parameters, n.iter = 15000, thin = 1)
+
+
+```
