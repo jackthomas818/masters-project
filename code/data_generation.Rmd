@@ -21,14 +21,8 @@ n <- 10
 # number of sampling occasions
 nsample <- 5
 
-# actual population
-N <- 0
-
 # capture probability
 p <- 0.5
-
-# occupancy probability
-occup <- 0
 ```
 
 ```{r datagen}
