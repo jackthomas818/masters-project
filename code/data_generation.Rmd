@@ -13,16 +13,22 @@ Data generation for Blanc et al. model.
 
 ```{r define}
 # number of sites in the study
-nsites <- 10
+nsites <- 4
 
 # number of individuals in capture history
 n <- 10
 
-# number of sampling occasions
-nsample <- 5
+# number of sampling occasions in capture-recapture
+nsample_cap <- 5
+
+# number of sampling occasions in presence-absence
+nsample_occ <- 7
 
 # capture probability
 p <- 0.5
+
+# occupancy probability
+occupancy <- 0.3
 ```
 
 ```{r datagen}
@@ -32,14 +38,14 @@ set.seed(1234)
 
 
 # empty capture history matrix
-cap_hist <- array(NA, dim = c(n, nsample))
+cap_hist <- array(NA, dim = c(n, nsample_cap))
 
 # empty presence-absence matrix
-pres_abs <- array(0, dim = c(nsites, nsample))
+pres_abs <- array(0, dim = c(nsites, nsample_occ))
 
 # Capture history generation
 for (i in 1:n) {
-  for (j in 1:nsample) {
+  for (j in 1:nsample_cap) {
     rv <- runif(1)
     if (p <= rv) {
       cap_hist[i, j] <- 1
@@ -50,14 +56,12 @@ for (i in 1:n) {
 }
 
 # Presence-absence generation
-for (i in 1:n) {
-  for (j in 1:nsample) {
-    if (cap_hist[i, j] == 1) {
-      # pick random site
-      rsite <- sample(1:nsites, 1)
-      # assign a 1 at capture occasion j
-      pres_abs[rsite, j] <- 1
-    }
+for (i in 1:nsites) {
+  for (j in 1:nsample_cap) {
+    rv <- runif(1)
+    if(occupancy <= rv){
+      pres_abs[i,j] = 1
+    } 
   }
 }
 ```
