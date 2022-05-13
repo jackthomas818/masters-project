@@ -80,7 +80,11 @@ for (i in 0:m) {
 ```{r pa-data}
 library(OpenMx)
 
-# simulate presence-absence data for each region for each period k
+# simulate presence-absence data for each region for each period nsample_occ
+
+# 2D matrix with rows being regions and columns being time periods
+presence_absence = array(data=0,dim=c(m*m,nsample_occ))
+
 
 # for each region
 
@@ -100,13 +104,14 @@ library(OpenMx)
 #' @param x1 The ending x value for the grid cell
 #' @param y0 The starting y value for the grid cell
 #' @param y1 The ending y value for the grid cell
+#' @param tau The movement parameter for the species, lower is less movement
 #'
 #' @return A value between 0 and 1 indicating the proportion of time that the
 #'         individual spends in the given grid cell
 #' @export
 #'
 #' @examples
-#' # show high proportion when in center of grid cell
+#' # show high proportion when homerange in center of grid cell
 #' calc_prop(0.25 / 2, 0.25 / 2, 0, 0.25, 0, 0.25, 0.1)
 calc_prop <- function(x, y, x0, x1, y0, y1, tau) {
   covariance <- matrix(c(tau^2, 0, 0, tau^2), nrow = 2, ncol = 2)
@@ -117,4 +122,5 @@ calc_prop <- function(x, y, x0, x1, y0, y1, tau) {
   prop <- omxMnor(covariance, means, lbound, ubound)[1]
   return(prop)
 }
+
 ```
