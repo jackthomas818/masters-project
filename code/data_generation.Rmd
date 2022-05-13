@@ -43,7 +43,7 @@ set.seed(1234)
 # Poisson process, with x, y coordinates as independent uniform
 # random variables
 
-homeranges <- array(data = NA, dim = c(n, 2),dimnames = list(c(1:n),c("x","y")))
+homeranges <- array(data = NA, dim = c(n, 2), dimnames = list(c(1:n), c("x", "y")))
 
 for (i in 1:n) {
   x <- runif(1)
@@ -53,50 +53,16 @@ for (i in 1:n) {
 }
 
 # plotting homeranges for validation
-par(pty="s")
+par(pty = "s")
 plot(homeranges)
-
 ```
 
+# Presence-Absence Data
 
+```{r presence-absence}
 
-```{r datagen}
+# We now have a m x m grid for the unit square as our divided area
 
-# seed set for testing purposes only
-set.seed(1234)
-
-
-# empty capture history matrix
-cap_hist <- array(NA, dim = c(n, nsample_cap))
-
-# empty presence-absence matrix
-pres_abs <- array(0, dim = c(nsites, nsample_occ))
-
-# Capture history generation
-for (i in 1:n) {
-  for (j in 1:nsample_cap) {
-    rv <- runif(1)
-    if (p <= rv) {
-      cap_hist[i, j] <- 1
-    } else {
-      cap_hist[i, j] <- 0
-    }
-  }
-}
-
-# Presence-absence generation
-for (i in 1:nsites) {
-  for (j in 1:nsample_cap) {
-    rv <- runif(1)
-    if (occupancy <= rv) {
-      pres_abs[i, j] <- 1
-    }
-  }
-}
-```
-
-```{r output}
-# write data to files
-write(cap_hist, file = "capture-recapture-data.txt")
-write.table(pres_abs, file = "presence-absence-data.csv", col.names = FALSE, row.names = FALSE, sep = ",")
+# number of grid cells per row
+m <- 4
 ```
