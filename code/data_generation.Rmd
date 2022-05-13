@@ -68,6 +68,31 @@ plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
 # number of grid cells per row
 m <- 4
 
+# x coordinates
+regions_x <- array(data = NA, dim = c(m * m, 2))
+
+for (k in 0:m - 1) {
+  for (i in 1:m) {
+    regions_x[i + k * m, 1] <- (i - 1) / m
+    regions_x[i + k * m, 2] <- regions_x[i + k * m, 1] + 1 / m
+  }
+}
+
+# y coordinates
+regions_y <- array(data = NA, dim = c(m * m, 2))
+j <- 0
+for (i in 1:(m * m)) {
+  regions_y[i, 1] <- j
+  regions_y[i, 2] <- j + 1 / m
+
+  if (i %% m == 0) {
+    j <- j + 1 / m
+  }
+}
+
+# regions are in x0,x1,y0,y1 form
+regions <- cbind(regions_x, regions_y)
+
 # plot grid cells on study area with homerange centers
 par(pty = "s")
 plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
@@ -83,7 +108,7 @@ library(OpenMx)
 # simulate presence-absence data for each region for each period nsample_occ
 
 # 2D matrix with rows being regions and columns being time periods
-presence_absence = array(data=0,dim=c(m*m,nsample_occ))
+presence_absence <- array(data = 0, dim = c(m * m, nsample_occ))
 
 
 # for each region
@@ -122,5 +147,4 @@ calc_prop <- function(x, y, x0, x1, y0, y1, tau) {
   prop <- omxMnor(covariance, means, lbound, ubound)[1]
   return(prop)
 }
-
 ```
