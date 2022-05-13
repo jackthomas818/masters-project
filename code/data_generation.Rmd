@@ -22,13 +22,16 @@ n <- 10
 nsample_cap <- 5
 
 # number of sampling occasions in presence-absence
-nsample_occ <- 7
+nsample_pa <- 7
 
 # capture probability
 p <- 0.5
 
 # occupancy probability
 occupancy <- 0.3
+
+# amount of movement for the species
+tau <- 0.1
 ```
 
 
@@ -59,8 +62,7 @@ plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
 
 # Presence-Absence Data
 
-```{r presence-absence}
-
+```{r presence-absence area}
 # We now have a m x m grid for the unit square as our divided area
 
 # number of grid cells per row
@@ -73,8 +75,46 @@ for (i in 0:m) {
   abline(v = i / m)
   abline(h = i / m)
 }
+```
 
-
+```{r pa-data}
+library(OpenMx)
 
 # simulate presence-absence data for each region for each period k
+
+# for each region
+
+#     compute proportion of time each individual spends in this region
+#     compute probability of detection for each individual
+#     for each period k
+#         run the r.v generation and say whether each individual was detected
+#         if we have at least one detection, this region had a presence 1 in period k
+
+
+
+#' Calculate Proportion of Time Spent in Grid Cell
+#'
+#' @param x The x coordinate of the homerange for an individual
+#' @param y The y coordinate of the homerange for an individual
+#' @param x0 The starting x value for the grid cell
+#' @param x1 The ending x value for the grid cell
+#' @param y0 The starting y value for the grid cell
+#' @param y1 The ending y value for the grid cell
+#'
+#' @return A value between 0 and 1 indicating the proportion of time that the
+#'         individual spends in the given grid cell
+#' @export
+#'
+#' @examples
+#' # show high proportion when in center of grid cell
+#' calc_prop(0.25 / 2, 0.25 / 2, 0, 0.25, 0, 0.25, 0.1)
+calc_prop <- function(x, y, x0, x1, y0, y1, tau) {
+  covariance <- matrix(c(tau^2, 0, 0, tau^2), nrow = 2, ncol = 2)
+  means <- c(x, y)
+  lbound <- c(x0, y0)
+  ubound <- c(x1, y1)
+
+  prop <- omxMnor(covariance, means, lbound, ubound)[1]
+  return(prop)
+}
 ```
