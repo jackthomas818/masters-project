@@ -31,6 +31,35 @@ p <- 0.5
 occupancy <- 0.3
 ```
 
+
+# Simulate Individuals
+
+```{r individuals}
+set.seed(1234)
+# our study area is the unit square
+
+# define homerange centers
+
+# Poisson process, with x, y coordinates as independent uniform
+# random variables
+
+homeranges <- array(data = NA, dim = c(n, 2),dimnames = list(c(1:n),c("x","y")))
+
+for (i in 1:n) {
+  x <- runif(1)
+  y <- runif(1)
+  homeranges[i, 1] <- x
+  homeranges[i, 2] <- y
+}
+
+# plotting homeranges for validation
+par(pty="s")
+plot(homeranges)
+
+```
+
+
+
 ```{r datagen}
 
 # seed set for testing purposes only
@@ -59,9 +88,9 @@ for (i in 1:n) {
 for (i in 1:nsites) {
   for (j in 1:nsample_cap) {
     rv <- runif(1)
-    if(occupancy <= rv){
-      pres_abs[i,j] = 1
-    } 
+    if (occupancy <= rv) {
+      pres_abs[i, j] <- 1
+    }
   }
 }
 ```
