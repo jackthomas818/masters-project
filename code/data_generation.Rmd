@@ -69,7 +69,7 @@ m <- 4
 # plot grid cells on study area with homerange centers
 par(pty = "s")
 plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
-for (i in 1:m) {
+for (i in 0:m) {
   abline(v = i / m)
   abline(h = i / m)
 }
