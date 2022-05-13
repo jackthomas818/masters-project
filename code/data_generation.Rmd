@@ -35,7 +35,7 @@ occupancy <- 0.3
 # Simulate Individuals
 
 ```{r individuals}
-set.seed(1234)
+set.seed(1313)
 # our study area is the unit square
 
 # define homerange centers
@@ -54,7 +54,7 @@ for (i in 1:n) {
 
 # plotting homeranges for validation
 par(pty = "s")
-plot(homeranges)
+plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
 ```
 
 # Presence-Absence Data
@@ -65,4 +65,16 @@ plot(homeranges)
 
 # number of grid cells per row
 m <- 4
+
+# plot grid cells on study area with homerange centers
+par(pty = "s")
+plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
+for (i in 1:m) {
+  abline(v = i / m)
+  abline(h = i / m)
+}
+
+
+
+# simulate presence-absence data for each region for each period k
 ```
