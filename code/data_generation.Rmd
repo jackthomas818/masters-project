@@ -12,8 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 Data generation for Blanc et al. model.
 
 ```{r define}
-# number of sites in the study
-nsites <- 4
+# number of sites
+nsites <- 16
 
 # number of individuals in capture history
 n <- 10
@@ -66,7 +66,7 @@ plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
 # We now have a m x m grid for the unit square as our divided area
 
 # number of grid cells per row
-m <- 4
+m <- sqrt(nsites)
 
 # x coordinates
 regions_x <- array(data = NA, dim = c(m * m, 2))
@@ -104,21 +104,12 @@ for (i in 0:m) {
 
 ```{r pa-data}
 library(OpenMx)
+options(scipen=999)
 
 # simulate presence-absence data for each region for each period nsample_occ
 
 # 2D matrix with rows being regions and columns being time periods
-presence_absence <- array(data = 0, dim = c(m * m, nsample_occ))
-
-
-# for each region
-
-#     compute proportion of time each individual spends in this region
-#     compute probability of detection for each individual
-#     for each period k
-#         run the r.v generation and say whether each individual was detected
-#         if we have at least one detection, this region had a presence 1 in period k
-
+presence_absence <- array(data = 0, dim = c(m * m, nsample_pa))
 
 
 #' Calculate Proportion of Time Spent in Grid Cell
@@ -147,4 +138,28 @@ calc_prop <- function(x, y, x0, x1, y0, y1, tau) {
   prop <- omxMnor(covariance, means, lbound, ubound)[1]
   return(prop)
 }
+
+
+# for each region
+indi_props <- array(data = NA, dim = c(nrow(regions),nrow(homeranges)))
+for (i in 1:nrow(regions)) {
+  # compute proportion of time each individual spends in this region
+  for (j in 1:nrow(homeranges)) {
+    x <- homeranges[j, 1]
+    y <- homeranges[j, 2]
+
+    x0 <- regions[i, 1]
+    x1 <- regions[i, 2]
+
+    y0 <- regions[i, 3]
+    y1 <- regions[i, 4]
+
+    prop <- calc_prop(x, y, x0, x1, y0, y1, tau)
+    indi_props[i,j] <- prop
+  }
+}
+#     compute probability of detection for each individual
+#     for each period k
+#         run the r.v generation and say whether each individual was detected
+#         if we have at least one detection, this region had a presence 1 in period k
 ```
