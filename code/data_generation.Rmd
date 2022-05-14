@@ -13,7 +13,7 @@ Data generation for Blanc et al. model.
 
 ```{r define}
 # number of sites
-nsites <- 16
+nsites <- 4**2
 
 # number of individuals in capture history
 n <- 10
@@ -93,18 +93,20 @@ for (i in 1:(m * m)) {
 # regions are in x0,x1,y0,y1 form
 regions <- cbind(regions_x, regions_y)
 
-# plot grid cells on study area with homerange centers
+# plot grid cells on study area with homerange centers and individuals labeled
 par(pty = "s")
 plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
 for (i in 0:m) {
   abline(v = i / m)
   abline(h = i / m)
 }
+# individuals labeled from 1 to n
+text(homeranges, labels = rownames(homeranges), cex = 1.5, font = 2, pos = 3)
 ```
 
 ```{r pa-data}
 library(OpenMx)
-options(scipen=999)
+options(scipen = 999)
 
 # simulate presence-absence data for each region for each period nsample_occ
 
@@ -141,7 +143,7 @@ calc_prop <- function(x, y, x0, x1, y0, y1, tau) {
 
 
 # for each region
-indi_props <- array(data = NA, dim = c(nrow(regions),nrow(homeranges)))
+indi_props <- array(data = NA, dim = c(nrow(regions), nrow(homeranges)))
 for (i in 1:nrow(regions)) {
   # compute proportion of time each individual spends in this region
   for (j in 1:nrow(homeranges)) {
@@ -155,9 +157,14 @@ for (i in 1:nrow(regions)) {
     y1 <- regions[i, 4]
 
     prop <- calc_prop(x, y, x0, x1, y0, y1, tau)
-    indi_props[i,j] <- prop
+    indi_props[i, j] <- prop
   }
 }
+
+# columns do not necessarily sum to 1, because individual may spend
+# time outside the study area
+colSums(indi_props)
+
 #     compute probability of detection for each individual
 #     for each period k
 #         run the r.v generation and say whether each individual was detected
