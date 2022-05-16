@@ -142,7 +142,6 @@ calc_prop <- function(x, y, x0, x1, y0, y1, tau) {
 }
 
 
-# for each region
 indi_props <- array(data = NA, dim = c(nrow(regions), nrow(homeranges)))
 for (i in 1:nrow(regions)) {
   # compute proportion of time each individual spends in this region
@@ -159,14 +158,23 @@ for (i in 1:nrow(regions)) {
     prop <- calc_prop(x, y, x0, x1, y0, y1, tau)
     indi_props[i, j] <- prop
   }
+
+  # run simulation for presence-absence data
+  # in this region
+  for (j in 1:nrow(homeranges)) {
+    for (k in 1:nsample_pa) {
+      # assume detection probability is proportional to time spent in region
+      detection_prob <- indi_props[i, j]
+      rv <- runif(1)
+
+      if (detection_prob >= rv) {
+        presence_absence[i, k] <- 1
+      }
+    }
+  }
 }
 
 # columns do not necessarily sum to 1, because individual may spend
 # time outside the study area
-colSums(indi_props)
-
-#     compute probability of detection for each individual
-#     for each period k
-#         run the r.v generation and say whether each individual was detected
-#         if we have at least one detection, this region had a presence 1 in period k
+# colSums(indi_props)
 ```
