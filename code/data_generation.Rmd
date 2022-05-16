@@ -12,8 +12,8 @@ knitr::opts_chunk$set(echo = TRUE)
 Data generation for Blanc et al. model.
 
 ```{r define}
-# number of sites in the study
-nsites <- 4
+# number of sites
+nsites <- 4**2
 
 # number of individuals in capture history
 n <- 10
@@ -22,20 +22,23 @@ n <- 10
 nsample_cap <- 5
 
 # number of sampling occasions in presence-absence
-nsample_occ <- 7
+nsample_pa <- 7
 
 # capture probability
 p <- 0.5
 
 # occupancy probability
 occupancy <- 0.3
+
+# amount of movement for the species
+tau <- 0.1
 ```
 
 
 # Simulate Individuals
 
 ```{r individuals}
-set.seed(1234)
+#set.seed(1313)
 # our study area is the unit square
 
 # define homerange centers
@@ -43,7 +46,7 @@ set.seed(1234)
 # Poisson process, with x, y coordinates as independent uniform
 # random variables
 
-homeranges <- array(data = NA, dim = c(n, 2),dimnames = list(c(1:n),c("x","y")))
+homeranges <- array(data = NA, dim = c(n, 2), dimnames = list(c(1:n), c("x", "y")))
 
 for (i in 1:n) {
   x <- runif(1)
@@ -53,50 +56,152 @@ for (i in 1:n) {
 }
 
 # plotting homeranges for validation
-par(pty="s")
-plot(homeranges)
-
+par(pty = "s")
+plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
 ```
 
+# Presence-Absence Data
+
+```{r presence-absence area}
+# We now have a m x m grid for the unit square as our divided area
+
+# number of grid cells per row
+m <- sqrt(nsites)
+
+# x coordinates
+regions_x <- array(data = NA, dim = c(m * m, 2))
+
+for (k in 0:m - 1) {
+  for (i in 1:m) {
+    regions_x[i + k * m, 1] <- (i - 1) / m
+    regions_x[i + k * m, 2] <- regions_x[i + k * m, 1] + 1 / m
+  }
+}
+
+# y coordinates
+regions_y <- array(data = NA, dim = c(m * m, 2))
+j <- 0
+for (i in 1:(m * m)) {
+  regions_y[i, 1] <- j
+  regions_y[i, 2] <- j + 1 / m
+
+  if (i %% m == 0) {
+    j <- j + 1 / m
+  }
+}
+
+# regions are in x0,x1,y0,y1 form
+regions <- cbind(regions_x, regions_y)
+
+# plot grid cells on study area with homerange centers and individuals labeled
+par(pty = "s")
+plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
+for (i in 0:m) {
+  abline(v = i / m)
+  abline(h = i / m)
+}
+# individuals labeled from 1 to n
+text(homeranges, labels = rownames(homeranges), cex = 1.5, font = 2, pos = 3)
+```
+
+```{r pa-data}
+library(OpenMx)
+options(scipen = 999)
+
+# simulate presence-absence data for each region for each period nsample_occ
+
+# 2D matrix with rows being regions and columns being time periods
+presence_absence <- array(data = 0, dim = c(m * m, nsample_pa))
 
 
-```{r datagen}
+#' Calculate Proportion of Time Spent in Grid Cell
+#'
+#' @param x The x coordinate of the homerange for an individual
+#' @param y The y coordinate of the homerange for an individual
+#' @param x0 The starting x value for the grid cell
+#' @param x1 The ending x value for the grid cell
+#' @param y0 The starting y value for the grid cell
+#' @param y1 The ending y value for the grid cell
+#' @param tau The movement parameter for the species, lower is less movement
+#'
+#' @return A value between 0 and 1 indicating the proportion of time that the
+#'         individual spends in the given grid cell
+#' @export
+#'
+#' @examples
+#' # show high proportion when homerange in center of grid cell
+#' calc_prop(0.25 / 2, 0.25 / 2, 0, 0.25, 0, 0.25, 0.1)
+calc_prop <- function(x, y, x0, x1, y0, y1, tau) {
+  covariance <- matrix(c(tau^2, 0, 0, tau^2), nrow = 2, ncol = 2)
+  means <- c(x, y)
+  lbound <- c(x0, y0)
+  ubound <- c(x1, y1)
 
-# seed set for testing purposes only
-set.seed(1234)
+  prop <- omxMnor(covariance, means, lbound, ubound)[1]
+  return(prop)
+}
 
 
-# empty capture history matrix
-cap_hist <- array(NA, dim = c(n, nsample_cap))
+indi_props <- array(data = NA, dim = c(nrow(regions), nrow(homeranges)))
+for (i in 1:nrow(regions)) {
+  # compute proportion of time each individual spends in this region
+  for (j in 1:nrow(homeranges)) {
+    x <- homeranges[j, 1]
+    y <- homeranges[j, 2]
 
-# empty presence-absence matrix
-pres_abs <- array(0, dim = c(nsites, nsample_occ))
+    x0 <- regions[i, 1]
+    x1 <- regions[i, 2]
 
-# Capture history generation
-for (i in 1:n) {
-  for (j in 1:nsample_cap) {
-    rv <- runif(1)
-    if (p <= rv) {
-      cap_hist[i, j] <- 1
-    } else {
-      cap_hist[i, j] <- 0
+    y0 <- regions[i, 3]
+    y1 <- regions[i, 4]
+
+    prop <- calc_prop(x, y, x0, x1, y0, y1, tau)
+    indi_props[i, j] <- prop
+  }
+
+  # run simulation for presence-absence data
+  # in this region
+  for (j in 1:nrow(homeranges)) {
+    for (k in 1:nsample_pa) {
+      # assume detection probability is proportional to time spent in region
+      detection_prob <- indi_props[i, j]
+      rv <- runif(1)
+
+      if (detection_prob >= rv) {
+        presence_absence[i, k] <- 1
+      }
     }
   }
 }
 
-# Presence-absence generation
-for (i in 1:nsites) {
-  for (j in 1:nsample_cap) {
-    rv <- runif(1)
-    if (occupancy <= rv) {
-      pres_abs[i, j] <- 1
-    }
-  }
-}
+# columns do not necessarily sum to 1, because individual may spend
+# time outside the study area
+# colSums(indi_props)
 ```
 
-```{r output}
-# write data to files
-write(cap_hist, file = "capture-recapture-data.txt")
-write.table(pres_abs, file = "presence-absence-data.csv", col.names = FALSE, row.names = FALSE, sep = ",")
+
+```{r plots}
+library(gplots)
+
+# create heatmap of study area, where the sum of detections for each region is plotted
+
+detect_sums <- rowSums(presence_absence)
+
+
+d_sums_mat <- apply(t(matrix(data=detect_sums,nrow=m,ncol=m)), 2, rev)
+
+col_pallette <- colorRampPalette(c("grey","yellow","orange","red"))
+
+heatmap.2(d_sums_mat,Rowv = FALSE,Colv = FALSE,dendrogram = 'none',col = col_pallette, tracecol=NA,labRow = NA,labCol = NA,margins=c(.1,.1))
+
+# plot grid cells on study area with homerange centers and individuals labeled
+par(pty = "s")
+plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
+for (i in 0:m) {
+  abline(v = i / m)
+  abline(h = i / m)
+}
+# individuals labeled from 1 to n
+text(homeranges, labels = rownames(homeranges), cex = 1.5, font = 2, pos = 3)
 ```
+
