@@ -1,0 +1,71 @@
+\documentclass[10pt,fleqn]{article} % WNAR requires minimum 10pt font
+
+\usepackage[margin=1in]{geometry} % WNAR requires minimum 1 inch margins
+\usepackage{setspace} % WNAR requires double spacing
+\doublespacing        % WNAR requires double spacing
+\usepackage{times}    % biometrics appears to use the font Times
+\usepackage{natbib} %bibliography package
+
+% See this reference sheet for more on how to use citations: http://merkel.texture.rocks/Latex/natbib.php
+
+
+\begin{document}
+%% first page must have:
+% manuscript title
+% abstract
+% list of keywords
+% authors
+\title{Title uses proper sentence case rules}
+\author{First M. Last\textsuperscript{1},
+        First2 M2. Last2\textsuperscript{2}, 
+        etc\\ 
+        \textsuperscript{1} Author Affiliation1\\ 
+        \textsuperscript{2} Author Affiliation2\\
+        etc}
+
+
+\maketitle{}
+
+\textsc{SUMMARY. \hspace{0.1in}} This is the abstract ($\sim$250 words). Some example text that spans several words exists here.  Some example text that spans several words exists here.  Some example text that spans several words exists here.  Some example text that spans several words exists here.  Some example text that spans several words exists here. 
+
+{\bf Keywords:} keyword A, keyword B,...
+
+\section*{Introduction}
+
+Sections and subsections are allowed, but subsections may not have additional subsections. All sections and subsections must be properly numbered.
+
+\subsection*{Subsections are allowed}
+
+ Equations must be numbered if and only if they are referenced in the text.  
+ 
+\subsection*{All headers use proper sentence case rules}
+
+ Some example text that spans several words exists here.  
+
+\section*{Methods}
+
+ Some example text that spans several words exists here.  
+ 
+\section*{Results or Case Study}
+
+ Some example text that spans several words exists here.  
+
+\section*{Discussion}
+
+ Some example text that spans several words exists here. 
+ 
+\begin{center}\textsc{ACKNOWLEDGEMENTS}\end{center} 
+Paragraph of acknowledgements here.
+
+\begin{center}\textsc{REFERENCES}\end{center}
+List references here (order alphabetically by first author) For example \cite{Cowen:2006}. 
+
+To use the bibliography, LateX your file, then BibTex the file, the LateX your file twice.
+\bigskip
+
+
+\bibliographystyle{biom}
+\bibliography{myrefs}
+
+
+\end{document}
