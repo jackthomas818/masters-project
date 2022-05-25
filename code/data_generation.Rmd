@@ -1,5 +1,5 @@
 ---
-title: "data_generation"
+title: "Capture-Recapture and Presence-Absence Data Generation"
 author: "Jack Thomas"
 date: "5/9/2022"
 output: pdf_document
@@ -24,21 +24,18 @@ nsample_cap <- 5
 # number of sampling occasions in presence-absence
 nsample_pa <- 7
 
-# capture probability
-p <- 0.5
-
-# occupancy probability
-occupancy <- 0.3
-
 # amount of movement for the species
-tau <- 0.1
+tau <- 0.3
+
+# number of camera traps
+ntraps <- 3
 ```
 
 
 # Simulate Individuals
 
 ```{r individuals}
-#set.seed(1313)
+set.seed(1313)
 # our study area is the unit square
 
 # define homerange centers
@@ -58,9 +55,166 @@ for (i in 1:n) {
 # plotting homeranges for validation
 par(pty = "s")
 plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
+text(homeranges, labels = rownames(homeranges), cex = 1.5, font = 2, pos = 3)
+```
+
+# Capture-Recapture Data
+
+## Trap locations
+
+Setting up the trap locations in the study area.
+
+```{r CR-trap-locations}
+set.seed(1235)
+traps <- array(data = NA, dim = c(ntraps, 2), dimnames = list(c(1:ntraps), c("x", "y")))
+
+# randomly place camera traps
+for (i in 1:ntraps) {
+  x <- runif(1)
+  y <- runif(1)
+  traps[i, 1] <- x
+  traps[i, 2] <- y
+}
+
+# plot traps on study area with homeranges included
+par(pty = "s", mar = c(5, 4, 4, 8), xpd = TRUE)
+
+plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
+points(traps, col = "red", pch = 15)
+legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, col = c("black", "red"), pch = c(1, 15))
+```
+
+## Trap detection probabilities
+
+We calculate the detection probabilities of each individual for each trap.
+
+```{r CR-trap-detection-prob}
+
+#' Distance function
+#'
+#' @param a point a in vector form
+#' @param b point b in vector form
+#'
+#' @return euclidean distance between point a and point b
+#' @export
+#'
+#' @examples
+#' a <- c(2, 6)
+#' b <- c(3, 5)
+#' distance(a, b)
+distance <- function(a, b) {
+  return(sqrt(sum((a - b)**2)))
+}
+
+
+#' Half-Normal Detection Function
+#'
+#' @param d distance of homerange center to trap
+#' @param tau movement parameter for species
+#'
+#' @return probability of detection for individual by camera trap
+#' @export
+#'
+#' @examples
+#' # example on species with tau=0.1
+#' trap <- c(0.25, 0.5)
+#' homerange <- c(0.26, 0.6)
+#'
+#' d <- distance(trap, homerange)
+#' detect_prob <- half_norm_detec(d, tau)
+half_norm_detec <- function(d, tau) {
+  return(exp((-d**2) / (tau**2)))
+}
+
+
+# 2D matrix of detection probabilities for each
+# individual i and each trap j
+trap_detec <- array(data = 0, dim = c(n, ntraps))
+
+# calculate camera trap detection probabilities
+
+for (i in 1:nrow(homeranges)) {
+  for (j in 1:ntraps) {
+    # calculate distance of homerange to camera trap j
+    d <- distance(homeranges[i, ], traps[j, ])
+    # calculate probability of detection
+    detec_prob <- half_norm_detec(d, tau)
+
+    trap_detec[i, j] <- detec_prob
+  }
+}
+
+# plot individuals and their camera trap detection probabilities
+# labelled for trap j. Blue label is individual i number.
+
+for (j in 1:ntraps) {
+  par(pty = "s", mar = c(5, 4, 4, 8), xpd = TRUE)
+  plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
+  points(x = traps[j, 1], y = traps[j, 2], col = "red", pch = 15)
+  text(x = traps[j, 1], y = traps[j, 2], labels = paste(c("Trap", j), collapse = " "), cex = 1.5, font = 2, pos = 3)
+  text(homeranges, labels = round(trap_detec[, j], 2), cex = 1, font = 2, pos = 3)
+  text(homeranges, labels = rownames(homeranges), cex = 1, font = 2, pos = 2, col = "blue")
+  legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, col = c("black", "red"), pch = c(1, 15))
+}
+```
+
+## Trap interactions
+
+Simulating the interactions of individuals with the traps over the study
+period. 
+
+``` {r CR-interactions}
+# simulate interactions of individuals with the traps
+camera_trap_full <- array(data = 0, dim = c(nrow(homeranges), ntraps, nsample_cap))
+
+# for each individual i
+for (i in 1:nrow(homeranges)) {
+  # for each trap j
+  for (j in 1:ntraps) {
+    # for each period k
+    for (k in 1:nsample_cap) {
+      # if individual detected by trap j, put 1 in matrix at i,j,k
+      rv <- runif(1)
+      if (trap_detec[i, j] >= rv) {
+        camera_trap_full[i, j, k] <- 1
+      }
+    }
+  }
+}
+
+camera_trap_full
+
+# plot number of times each individual was seen by each trap
+trap_counts <- rowSums(camera_trap_full, dims = 2)
+
+for (j in 1:ntraps) {
+  barplot(trap_counts[, j], names.arg = rownames(homeranges), main = paste(c("Trap", j), collapse = " "), xlab = "individual", ylab = "count")
+}
+```
+
+## Creating Capture-Histories
+
+```{r CR-history-generation}
+
+capture_hist <- array(data = 0, dim = c(nrow(homeranges), nsample_cap))
+
+# for each individual
+for (i in 1:nrow(homeranges)) {
+  # for each period k
+  for (k in 1:nsample_cap) {
+    # if individual was detected by any trap on period k, add 1 to capture history
+    if (sum(camera_trap_full[i, , k]) >= 1) {
+      capture_hist[i, k] <- 1
+    }
+  }
+}
+
+capture_hist
 ```
 
 # Presence-Absence Data
+
+## Grid area setup
 
 ```{r presence-absence area}
 # We now have a m x m grid for the unit square as our divided area
@@ -103,6 +257,8 @@ for (i in 0:m) {
 # individuals labeled from 1 to n
 text(homeranges, labels = rownames(homeranges), cex = 1.5, font = 2, pos = 3)
 ```
+
+## Simulation of presence-absence data
 
 ```{r pa-data}
 library(OpenMx)
@@ -176,9 +332,10 @@ for (i in 1:nrow(regions)) {
 
 # columns do not necessarily sum to 1, because individual may spend
 # time outside the study area
-# colSums(indi_props)
+colSums(indi_props)
 ```
 
+## Heatmap of study area
 
 ```{r plots}
 library(gplots)
@@ -188,11 +345,11 @@ library(gplots)
 detect_sums <- rowSums(presence_absence)
 
 
-d_sums_mat <- apply(t(matrix(data=detect_sums,nrow=m,ncol=m)), 2, rev)
+d_sums_mat <- apply(t(matrix(data = detect_sums, nrow = m, ncol = m)), 2, rev)
 
-col_pallette <- colorRampPalette(c("grey","yellow","orange","red"))
+col_pallette <- colorRampPalette(c("grey", "yellow", "orange", "red"))
 
-heatmap.2(d_sums_mat,Rowv = FALSE,Colv = FALSE,dendrogram = 'none',col = col_pallette, tracecol=NA,labRow = NA,labCol = NA,margins=c(.1,.1))
+heatmap.2(d_sums_mat, Rowv = FALSE, Colv = FALSE, dendrogram = "none", col = col_pallette, tracecol = NA, labRow = NA, labCol = NA, margins = c(.1, .1))
 
 # plot grid cells on study area with homerange centers and individuals labeled
 par(pty = "s")
@@ -204,4 +361,3 @@ for (i in 0:m) {
 # individuals labeled from 1 to n
 text(homeranges, labels = rownames(homeranges), cex = 1.5, font = 2, pos = 3)
 ```
-
