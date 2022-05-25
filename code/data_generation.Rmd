@@ -25,7 +25,7 @@ nsample_cap <- 5
 nsample_pa <- 7
 
 # amount of movement for the species
-tau <- 0.5
+tau <- 0.3
 
 # number of camera traps
 ntraps <- 3
@@ -55,6 +55,7 @@ for (i in 1:n) {
 # plotting homeranges for validation
 par(pty = "s")
 plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
+text(homeranges, labels = rownames(homeranges), cex = 1.5, font = 2, pos = 3)
 ```
 
 # Capture-Recapture Data
@@ -191,6 +192,25 @@ for (j in 1:ntraps) {
 }
 ```
 
+## Creating Capture-Histories
+
+```{r CR-history-generation}
+
+capture_hist <- array(data = 0, dim = c(nrow(homeranges), nsample_cap))
+
+# for each individual
+for (i in 1:nrow(homeranges)) {
+  # for each period k
+  for (k in 1:nsample_cap) {
+    # if individual was detected by any trap on period k, add 1 to capture history
+    if (sum(camera_trap_full[i, , k]) >= 1) {
+      capture_hist[i, k] <- 1
+    }
+  }
+}
+
+capture_hist
+```
 
 # Presence-Absence Data
 
