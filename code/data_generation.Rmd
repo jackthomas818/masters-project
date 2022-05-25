@@ -157,7 +157,25 @@ for (j in 1:ntraps) {
 
 ``` {r CR-interactions}
 
+# simulate interactions of individuals with the traps
+camera_trap_full <- array(data = 0, dim = c(nrow(homeranges), ntraps, nsample_cap))
 
+# for each individual i
+for (i in 1:nrow(homeranges)) {
+  # for each trap j
+  for (j in 1:ntraps) {
+    # for each period k
+    for (k in 1:nsample_cap) {
+      # if individual detected by trap j, put 1 in matrix at i,j,k
+      rv <- runif(1)
+      if (trap_detec[i, j] >= rv) {
+        camera_trap_full[i, j, k] <- 1
+      }
+    }
+  }
+}
+
+camera_trap_full
 ```
 
 
