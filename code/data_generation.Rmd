@@ -142,7 +142,7 @@ for (i in 1:nrow(homeranges)) {
 }
 
 # plot individuals and their camera trap detection probabilities
-# labelled for trap j
+# labelled for trap j. Blue label is individual i number.
 # get trap detection probability labels
 
 for (j in 1:ntraps) {
@@ -151,11 +151,13 @@ for (j in 1:ntraps) {
   points(x = traps[j, 1], y = traps[j, 2], col = "red", pch = 15)
   text(x = traps[j, 1], y = traps[j, 2], labels = paste(c("Trap", j), collapse = " "), cex = 1.5, font = 2, pos = 3)
   text(homeranges, labels = round(trap_detec[, j], 2), cex = 1, font = 2, pos = 3)
+  text(homeranges, labels = rownames(homeranges), cex = 1, font = 2, pos = 2, col = "blue")
   legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, col = c("black", "red"), pch = c(1, 15))
 }
 ```
 
 ``` {r CR-interactions}
+library(ggplot2)
 
 # simulate interactions of individuals with the traps
 camera_trap_full <- array(data = 0, dim = c(nrow(homeranges), ntraps, nsample_cap))
@@ -175,7 +177,12 @@ for (i in 1:nrow(homeranges)) {
   }
 }
 
-camera_trap_full
+# plot number of times each individual was seen by each trap
+trap_counts <- rowSums(camera_trap_full, dims = 2)
+
+for (j in 1:ntraps) {
+  barplot(trap_counts[, j], names.arg = rownames(homeranges), main = paste(c("Trap", j), collapse = " "), xlab = "individual", ylab = "count")
+}
 ```
 
 
