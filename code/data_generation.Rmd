@@ -84,6 +84,41 @@ points(traps, col = "red", pch = 15)
 legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, col = c("black", "red"), pch = c(1, 15))
 ```
 
+```{r CR-interactions}
+
+# simulate interactions of individuals with traps
+
+
+#' Distance function
+#'
+#' @param a point a in vector form
+#' @param b point b in vector form
+#'
+#' @return euclidean distance between point a and point b
+#' @export
+#'
+#' @examples
+#' a <- c(2, 6)
+#' b <- c(3, 5)
+#' distance(a,b)
+distance <- function(a, b) {
+  return(sqrt(sum((a - b)**2)))
+}
+
+
+#' Half-Normal Detection Function
+#'
+#' @param d distance of homerange center to trap
+#' @param tau movement parameter for species
+#'
+#' @return probability of detection for individual by camera trap
+#' @export
+#'
+#' @examples
+half_norm_detec <- function(d, tau) {
+
+}
+```
 
 
 # Presence-Absence Data
