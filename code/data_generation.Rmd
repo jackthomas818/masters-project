@@ -62,6 +62,7 @@ for (i in 1:n) {
 par(pty = "s")
 plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
 ```
+
 # Capture-Recapture Data
 
 ```{r Capture-Recapture Traps}
@@ -86,9 +87,6 @@ legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, c
 
 ```{r CR-interactions}
 
-# simulate interactions of individuals with traps
-
-
 #' Distance function
 #'
 #' @param a point a in vector form
@@ -100,7 +98,7 @@ legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, c
 #' @examples
 #' a <- c(2, 6)
 #' b <- c(3, 5)
-#' distance(a,b)
+#' distance(a, b)
 distance <- function(a, b) {
   return(sqrt(sum((a - b)**2)))
 }
@@ -115,9 +113,26 @@ distance <- function(a, b) {
 #' @export
 #'
 #' @examples
+#' # example on species with tau=0.1
+#' trap <- c(0.25, 0.5)
+#' homerange <- c(0.26, 0.6)
+#'
+#' d <- distance(trap, homerange)
+#' detect_prob <- half_norm_detec(d, tau)
 half_norm_detec <- function(d, tau) {
-
+  return(exp((-d**2) / (tau**2)))
 }
+
+
+# simulate interactions of individuals with traps
+
+# 2D matrix of detection probabilities for each
+# individual i and each trap j
+trap_detec <- array(data = 0, dim = c(n, ntraps))
+
+# for each homerange i
+#     for each trap j
+#         calculate probability of detection
 ```
 
 
