@@ -124,15 +124,25 @@ half_norm_detec <- function(d, tau) {
 }
 
 
-# simulate interactions of individuals with traps
-
 # 2D matrix of detection probabilities for each
 # individual i and each trap j
 trap_detec <- array(data = 0, dim = c(n, ntraps))
 
-# for each homerange i
-#     for each trap j
-#         calculate probability of detection
+# calculate camera trap detection probabilities
+
+for (i in 1:nrow(homeranges)) {
+  for (j in 1:ntraps) {
+    # calculate distance of homerange to camera trap j
+    d <- distance(homeranges[i], traps[j])
+    # calculate probability of detection
+    detec_prob <- half_norm_detec(d, tau)
+
+    trap_detec[i, j] <- detec_prob
+  }
+}
+
+# simulate interactions of individuals with traps
+
 ```
 
 
