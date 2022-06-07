@@ -1,0 +1,90 @@
+---
+title: "RJAGS Tutorial"
+author: "Jack Thomas"
+date: "6/7/2022"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Generate data
+
+Example 1: Inference on Normally Distributed Data
+
+unkown mean and variance.
+
+
+
+```{r gen_data}
+library(rjags)
+library(coda)
+
+n <- 50
+mu <- 4.3
+sigma <- 0.38
+tau <- 1 / (sigma**2)
+
+# Generate values (stochastic part of the model)
+set.seed(214) # so we all get the same random numbers
+yi <- rnorm(n, mean = mu, sd = sigma)
+
+# Mean and SD of sample
+mean(yi)
+sd(yi)
+
+# Get frequentist confidence interval for the mean
+t.test(yi)$conf.int[1:2]
+```
+
+```{r define_model}
+
+sink("model.txt")
+cat("
+model {
+
+# Likelihood
+for(i in 1:n){
+  y[i] ~ dnorm(mu,tau)
+}
+
+
+# Priors
+mu ~ dnorm(0,1/(100**2)) # note that dnorm(mean,precision), precision = 1/variance 
+sigma ~ dunif(0,10)
+
+# Derived quanitites
+tau <- pow(sigma, -2)
+
+}
+", fill = TRUE)
+sink()
+
+data <- list(y = yi, n = n)
+```
+
+
+```{r setup}
+inits <- function() {
+  list(mu = rnorm(1), sigma = runif(1))
+}
+
+# MCMC Settings
+ni <- 1000
+nt <- 2
+nb <- 500
+nc <- 3
+
+parameters <- c("mu", "sigma")
+```
+
+
+
+```{r run}
+out <- jags.model("model.txt", data, inits)
+
+jsample <- coda.samples(out, parameters, n.iter = 15000, thin = 1)
+
+summary(jsample)
+```
