@@ -378,6 +378,10 @@ write.table(presence_absence, file = "presence-absence-data.csv", col.names = FA
 # Capture-recapture
 # data structure: rows = individuals; columns = capture occasions
 
+# remove capture-histories of 0s
+
+capture_hist <- capture_hist[rowSums(capture_hist==0, na.rm=TRUE)<ncol(capture_hist), ]
+
 # .txt format
 write.table(capture_hist, file = "capture-recapture-data.txt", col.names = FALSE, sep = " ", row.names = FALSE)
 ```
