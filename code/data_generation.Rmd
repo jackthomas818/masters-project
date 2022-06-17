@@ -36,26 +36,32 @@ ntraps <- 3
 
 ```{r individuals}
 set.seed(1313)
-# our study area is the unit square
 
-# define homerange centers
+create_homeranges <- function(n) {
+  
+  # our study area is the unit square
+  # define homerange centers
 
-# Poisson process, with x, y coordinates as independent uniform
-# random variables
+  # Poisson process, with x, y coordinates as independent uniform
+  # random variables
 
-homeranges <- array(data = NA, dim = c(n, 2), dimnames = list(c(1:n), c("x", "y")))
+  homeranges <- array(data = NA, dim = c(n, 2), dimnames = list(c(1:n), c("x", "y")))
 
-for (i in 1:n) {
-  x <- runif(1)
-  y <- runif(1)
-  homeranges[i, 1] <- x
-  homeranges[i, 2] <- y
+  for (i in 1:n) {
+    x <- runif(1)
+    y <- runif(1)
+    homeranges[i, 1] <- x
+    homeranges[i, 2] <- y
+  }
+
+  return(homeranges)
 }
 
+# homeranges <- create_homeranges(n)
 # plotting homeranges for validation
-par(pty = "s")
-plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
-text(homeranges, labels = rownames(homeranges), cex = 1.5, font = 2, pos = 3)
+# par(pty = "s")
+# plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
+# text(homeranges, labels = rownames(homeranges), cex = 1.5, font = 2, pos = 3)
 ```
 
 # Capture-Recapture Data
@@ -66,22 +72,40 @@ Setting up the trap locations in the study area.
 
 ```{r CR-trap-locations}
 set.seed(1235)
-traps <- array(data = NA, dim = c(ntraps, 2), dimnames = list(c(1:ntraps), c("x", "y")))
 
-# randomly place camera traps
-for (i in 1:ntraps) {
-  x <- runif(1)
-  y <- runif(1)
-  traps[i, 1] <- x
-  traps[i, 2] <- y
+#' Define Trap Locations
+#' Function that places camera traps in the study area. Uses
+#' a Poisson process where x, y coordinates of each trap
+#' are independent uniform random variables
+#'
+#' @param ntraps the number of camera traps to place
+#'
+#' @return traps a 2D array of trap locations in x,y coordinates
+#' @export
+#'
+#' @examples
+#' ntraps <- 3
+#' traps <- define_traps(ntraps)
+#' # plot traps on study area with homeranges included
+#' par(pty = "s", mar = c(5, 4, 4, 8), xpd = TRUE)
+#'
+#' plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
+#' points(traps, col = "red", pch = 15)
+#' legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, col = c("black", "red"), pch = c(1, 15))
+define_traps <- function(ntraps) {
+  
+  traps <- array(data = NA, dim = c(ntraps, 2), dimnames = list(c(1:ntraps), c("x", "y")))
+
+  # randomly place camera traps
+  for (i in 1:ntraps) {
+    x <- runif(1)
+    y <- runif(1)
+    traps[i, 1] <- x
+    traps[i, 2] <- y
+  }
+
+  return(traps)
 }
-
-# plot traps on study area with homeranges included
-par(pty = "s", mar = c(5, 4, 4, 8), xpd = TRUE)
-
-plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
-points(traps, col = "red", pch = 15)
-legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, col = c("black", "red"), pch = c(1, 15))
 ```
 
 ## Trap detection probabilities
@@ -127,35 +151,41 @@ half_norm_detec <- function(d, tau) {
 }
 
 
-# 2D matrix of detection probabilities for each
-# individual i and each trap j
-trap_detec <- array(data = 0, dim = c(n, ntraps))
+calc_detection <- function(n, ntraps, homeranges, traps, tau) {
+  # 2D matrix of detection probabilities for each
+  # individual i and each trap j
+  trap_detec <- array(data = 0, dim = c(n, ntraps))
 
-# calculate camera trap detection probabilities
+  # calculate camera trap detection probabilities
 
-for (i in 1:nrow(homeranges)) {
-  for (j in 1:ntraps) {
-    # calculate distance of homerange to camera trap j
-    d <- distance(homeranges[i, ], traps[j, ])
-    # calculate probability of detection
-    detec_prob <- half_norm_detec(d, tau)
+  for (i in 1:nrow(homeranges)) {
+    for (j in 1:ntraps) {
+      # calculate distance of homerange to camera trap j
+      d <- distance(homeranges[i, ], traps[j, ])
+      # calculate probability of detection
+      detec_prob <- half_norm_detec(d, tau)
 
-    trap_detec[i, j] <- detec_prob
+      trap_detec[i, j] <- detec_prob
+    }
   }
+  return(trap_detec)
 }
+
+
+# trap_detec <- calc_detection(n, ntraps, homeranges, traps, tau)
 
 # plot individuals and their camera trap detection probabilities
 # labelled for trap j. Blue label is individual i number.
 
-for (j in 1:ntraps) {
-  par(pty = "s", mar = c(5, 4, 4, 8), xpd = TRUE)
-  plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
-  points(x = traps[j, 1], y = traps[j, 2], col = "red", pch = 15)
-  text(x = traps[j, 1], y = traps[j, 2], labels = paste(c("Trap", j), collapse = " "), cex = 1.5, font = 2, pos = 3)
-  text(homeranges, labels = round(trap_detec[, j], 2), cex = 1, font = 2, pos = 3)
-  text(homeranges, labels = rownames(homeranges), cex = 1, font = 2, pos = 2, col = "blue")
-  legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, col = c("black", "red"), pch = c(1, 15))
-}
+# for (j in 1:ntraps) {
+#  par(pty = "s", mar = c(5, 4, 4, 8), xpd = TRUE)
+#  plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
+#  points(x = traps[j, 1], y = traps[j, 2], col = "red", pch = 15)
+#  text(x = traps[j, 1], y = traps[j, 2], labels = paste(c("Trap", j), collapse = " "), cex = 1.5, font = 2, pos = 3)
+#  text(homeranges, labels = round(trap_detec[, j], 2), cex = 1, font = 2, pos = 3)
+#  text(homeranges, labels = rownames(homeranges), cex = 1, font = 2, pos = 2, col = "blue")
+#  legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, col = c("black", "red"), pch = c(1, 15))
+# }
 ```
 
 ## Trap interactions
@@ -164,52 +194,62 @@ Simulating the interactions of individuals with the traps over the study
 period. 
 
 ``` {r CR-interactions}
-# simulate interactions of individuals with the traps
-camera_trap_full <- array(data = 0, dim = c(nrow(homeranges), ntraps, nsample_cap))
 
-# for each individual i
-for (i in 1:nrow(homeranges)) {
-  # for each trap j
-  for (j in 1:ntraps) {
-    # for each period k
-    for (k in 1:nsample_cap) {
-      # if individual detected by trap j, put 1 in matrix at i,j,k
-      rv <- runif(1)
-      if (trap_detec[i, j] >= rv) {
-        camera_trap_full[i, j, k] <- 1
+sim_trap_interac <- function(homeranges, ntraps, nsample_cap, trap_detec) {
+  # simulate interactions of individuals with the traps
+  camera_trap_full <- array(data = 0, dim = c(nrow(homeranges), ntraps, nsample_cap))
+
+  # for each individual i
+  for (i in 1:nrow(homeranges)) {
+    # for each trap j
+    for (j in 1:ntraps) {
+      # for each period k
+      for (k in 1:nsample_cap) {
+        # if individual detected by trap j, put 1 in matrix at i,j,k
+        rv <- runif(1)
+        if (trap_detec[i, j] >= rv) {
+          camera_trap_full[i, j, k] <- 1
+        }
       }
     }
   }
+  return(camera_trap_full)
 }
 
-camera_trap_full
+
+# camera_trap_full <- sim_trap_interac(homeranges, ntraps, nsample_cap, trap_detec)
 
 # plot number of times each individual was seen by each trap
-trap_counts <- rowSums(camera_trap_full, dims = 2)
+# trap_counts <- rowSums(camera_trap_full, dims = 2)
 
-for (j in 1:ntraps) {
-  barplot(trap_counts[, j], names.arg = rownames(homeranges), main = paste(c("Trap", j), collapse = " "), xlab = "individual", ylab = "count")
-}
+# for (j in 1:ntraps) {
+#  barplot(trap_counts[, j], names.arg = rownames(homeranges), main = paste(c("Trap", j), collapse = " "), xlab = "individual", ylab = "count")
+# }
 ```
 
 ## Creating Capture-Histories
 
 ```{r CR-history-generation}
 
-capture_hist <- array(data = 0, dim = c(nrow(homeranges), nsample_cap))
+create_cap_hist <- function(homeranges, nsample_cap, camera_trap_full) {
+  capture_hist <- array(data = 0, dim = c(nrow(homeranges), nsample_cap))
 
-# for each individual
-for (i in 1:nrow(homeranges)) {
-  # for each period k
-  for (k in 1:nsample_cap) {
-    # if individual was detected by any trap on period k, add 1 to capture history
-    if (sum(camera_trap_full[i, , k]) >= 1) {
-      capture_hist[i, k] <- 1
+  # for each individual
+  for (i in 1:nrow(homeranges)) {
+    # for each period k
+    for (k in 1:nsample_cap) {
+      # if individual was detected by any trap on period k, add 1 to capture history
+      if (sum(camera_trap_full[i, , k]) >= 1) {
+        capture_hist[i, k] <- 1
+      }
     }
   }
+  return(capture_hist)
 }
 
-capture_hist
+
+
+# capture_hist <- create_cap_hist(homeranges, nsample_cap, camera_trap_full)
 ```
 
 # Presence-Absence Data
@@ -217,45 +257,67 @@ capture_hist
 ## Grid area setup
 
 ```{r presence-absence area}
-# We now have a m x m grid for the unit square as our divided area
 
-# number of grid cells per row
-m <- sqrt(nsites)
+#' Setup Grid Area
+#' function that divides the study area (a unit square) into a grid of equally
+#' divided regions.
+#' @param nsites number of grid cells required
+#'
+#' @return regions, a 2-d array with grid cells defined as x0,x1,y0,y1
+#'                  bounding boxes
+#'
+#' @export
+#'
+#' @examples
+setup_grid <- function(nsites) {
 
-# x coordinates
-regions_x <- array(data = NA, dim = c(m * m, 2))
+  # We now have a m x m grid for the unit square as our divided area
 
-for (k in 0:m - 1) {
-  for (i in 1:m) {
-    regions_x[i + k * m, 1] <- (i - 1) / m
-    regions_x[i + k * m, 2] <- regions_x[i + k * m, 1] + 1 / m
+  # number of grid cells per row
+  m <- sqrt(nsites)
+
+  # x coordinates
+  regions_x <- array(data = NA, dim = c(m * m, 2))
+
+  for (k in 0:m - 1) {
+    for (i in 1:m) {
+      regions_x[i + k * m, 1] <- (i - 1) / m
+      regions_x[i + k * m, 2] <- regions_x[i + k * m, 1] + 1 / m
+    }
   }
+
+  # y coordinates
+  regions_y <- array(data = NA, dim = c(m * m, 2))
+  j <- 0
+  for (i in 1:(m * m)) {
+    regions_y[i, 1] <- j
+    regions_y[i, 2] <- j + 1 / m
+
+    if (i %% m == 0) {
+      j <- j + 1 / m
+    }
+  }
+
+  # regions are in x0,x1,y0,y1 form
+  regions <- cbind(regions_x, regions_y)
+
+  return(regions)
 }
 
-# y coordinates
-regions_y <- array(data = NA, dim = c(m * m, 2))
-j <- 0
-for (i in 1:(m * m)) {
-  regions_y[i, 1] <- j
-  regions_y[i, 2] <- j + 1 / m
 
-  if (i %% m == 0) {
-    j <- j + 1 / m
-  }
-}
+# regions <- setup_grid(nsites)
 
-# regions are in x0,x1,y0,y1 form
-regions <- cbind(regions_x, regions_y)
 
 # plot grid cells on study area with homerange centers and individuals labeled
-par(pty = "s")
-plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
-for (i in 0:m) {
-  abline(v = i / m)
-  abline(h = i / m)
-}
+# par(pty = "s")
+# plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
+# m <- sqrt(nsites)
+# for (i in 0:m) {
+#  abline(v = i / m)
+#  abline(h = i / m)
+# }
 # individuals labeled from 1 to n
-text(homeranges, labels = rownames(homeranges), cex = 1.5, font = 2, pos = 3)
+# text(homeranges, labels = rownames(homeranges), cex = 1.5, font = 2, pos = 3)
 ```
 
 ## Simulation of presence-absence data
@@ -263,11 +325,6 @@ text(homeranges, labels = rownames(homeranges), cex = 1.5, font = 2, pos = 3)
 ```{r pa-data}
 library(OpenMx)
 options(scipen = 999)
-
-# simulate presence-absence data for each region for each period nsample_occ
-
-# 2D matrix with rows being regions and columns being time periods
-presence_absence <- array(data = 0, dim = c(m * m, nsample_pa))
 
 
 #' Calculate Proportion of Time Spent in Grid Cell
@@ -297,42 +354,70 @@ calc_prop <- function(x, y, x0, x1, y0, y1, tau) {
   return(prop)
 }
 
+#' Simulate Presence-Absence Data
+#' Function that simulates presence-absence data for each region and for
+#' each period. Assumes that the amount of time spent by each individual
+#' in each region is proportional to the probability of detection.
+#'
+#' @param nsites number of regions in the study area
+#' @param nsample_pa number of sampling occasions
+#' @param homeranges the homeranges of the individuals as 2D array of coordinates
+#' @param regions the subareas of the study area, as 2D array of [x0,x1,y0,y1]
+#'                bounding boxes
+#' @param tau the movement parameter for the species, higher is more movement
+#'
+#' @return presence_absence a 2D array (nsites rows by nsample_pa columns)
+#'         of 0s and 1s where 1 indicates a detection for a site and a period.
+#' @export
+#'
+#' @examples
+sim_presence_absence <- function(nsites, nsample_pa, homeranges, regions, tau) {
 
-indi_props <- array(data = NA, dim = c(nrow(regions), nrow(homeranges)))
-for (i in 1:nrow(regions)) {
-  # compute proportion of time each individual spends in this region
-  for (j in 1:nrow(homeranges)) {
-    x <- homeranges[j, 1]
-    y <- homeranges[j, 2]
+  # simulate presence-absence data for each region for each period nsample_occ
 
-    x0 <- regions[i, 1]
-    x1 <- regions[i, 2]
+  # 2D matrix with rows being regions and columns being time periods
+  presence_absence <- array(data = 0, dim = c(m * m, nsample_pa))
 
-    y0 <- regions[i, 3]
-    y1 <- regions[i, 4]
+  indi_props <- array(data = NA, dim = c(nrow(regions), nrow(homeranges)))
+  for (i in 1:nrow(regions)) {
+    # compute proportion of time each individual spends in this region
+    for (j in 1:nrow(homeranges)) {
+      x <- homeranges[j, 1]
+      y <- homeranges[j, 2]
 
-    prop <- calc_prop(x, y, x0, x1, y0, y1, tau)
-    indi_props[i, j] <- prop
-  }
+      x0 <- regions[i, 1]
+      x1 <- regions[i, 2]
 
-  # run simulation for presence-absence data
-  # in this region
-  for (j in 1:nrow(homeranges)) {
-    for (k in 1:nsample_pa) {
-      # assume detection probability is proportional to time spent in region
-      detection_prob <- indi_props[i, j]
-      rv <- runif(1)
+      y0 <- regions[i, 3]
+      y1 <- regions[i, 4]
 
-      if (detection_prob >= rv) {
-        presence_absence[i, k] <- 1
+      prop <- calc_prop(x, y, x0, x1, y0, y1, tau)
+      indi_props[i, j] <- prop
+    }
+
+    # run simulation for presence-absence data
+    # in this region
+    for (j in 1:nrow(homeranges)) {
+      for (k in 1:nsample_pa) {
+        # assume detection probability is proportional to time spent in region
+        detection_prob <- indi_props[i, j]
+        rv <- runif(1)
+
+        if (detection_prob >= rv) {
+          presence_absence[i, k] <- 1
+        }
       }
     }
   }
+  return(presence_absence)
 }
+
+
+# presence_absence <- sim_presence_absence(nsites, nsample_pa, homeranges, regions, tau)
 
 # columns do not necessarily sum to 1, because individual may spend
 # time outside the study area
-colSums(indi_props)
+# colSums(indi_props)
 ```
 
 ## Heatmap of study area
@@ -340,27 +425,83 @@ colSums(indi_props)
 ```{r plots}
 library(gplots)
 
-# create heatmap of study area, where the sum of detections for each region is plotted
+#' Generate Heatmap
+#' Function that creates a heatmap of the study area, where the sum of detections
+#' for each region is plotted.
+#'
+#' @param presence_absence output of sim_presence_absence
+#' @param nsites number of sites in study area
+#'
+#' @return
+#' @export
+#'
+#' @examples
+gen_heatmap <- function(presence_absence, nsites) {
 
-detect_sums <- rowSums(presence_absence)
+  # create heatmap of study area, where the sum of detections for each region is plotted
 
+  detect_sums <- rowSums(presence_absence)
 
-d_sums_mat <- apply(t(matrix(data = detect_sums, nrow = m, ncol = m)), 2, rev)
+  m <- sqrt(nsites)
+  d_sums_mat <- apply(t(matrix(data = detect_sums, nrow = m, ncol = m)), 2, rev)
 
-col_pallette <- colorRampPalette(c("grey", "yellow", "orange", "red"))
+  col_pallette <- colorRampPalette(c("grey", "yellow", "orange", "red"))
 
-heatmap.2(d_sums_mat, Rowv = FALSE, Colv = FALSE, dendrogram = "none", col = col_pallette, tracecol = NA, labRow = NA, labCol = NA, margins = c(.1, .1))
+  heatmap.2(d_sums_mat, Rowv = FALSE, Colv = FALSE, dendrogram = "none", col = col_pallette, tracecol = NA, labRow = NA, labCol = NA, margins = c(.1, .1))
+}
+
+# gen_heatmap(presence_absence, nsites)
 
 # plot grid cells on study area with homerange centers and individuals labeled
-par(pty = "s")
-plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
-for (i in 0:m) {
-  abline(v = i / m)
-  abline(h = i / m)
-}
+# par(pty = "s")
+# plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
+# for (i in 0:m) {
+#  abline(v = i / m)
+#  abline(h = i / m)
+# }
 # individuals labeled from 1 to n
-text(homeranges, labels = rownames(homeranges), cex = 1.5, font = 2, pos = 3)
+# text(homeranges, labels = rownames(homeranges), cex = 1.5, font = 2, pos = 3)
 ```
+
+# Generate Data
+
+```{r generate}
+
+homeranges <- create_homeranges(n)
+
+#' Generate Capture History Data
+#' Function that generates the capture history array. Uses camera traps to 
+#' be the capture-recapture method. 
+#'
+#' @param n number of individuals to simulate
+#' @param ntraps number of camera traps to place in study area
+#' @param nsample_cap number of capture-recapture sampling occasions
+#' @param tau movement parameter of species
+#' @param homeranges array of homerange centers for all individuals
+#'
+#' @return capture_hist a 2D array (n rows by nsample_cap columns) of
+#'         the capture history for each individual, where 1 indicates a 
+#'         capture.
+#' @export
+#'
+#' @examples
+generate_capture_hist <- function(n, ntraps, nsample_cap, tau, homeranges) {
+  # place camera traps in study area
+  traps <- define_traps(ntraps)
+  # calculate the probabilities of detection for each individual by each trap
+  trap_detec <- calc_detection(n, ntraps, homeranges, traps, tau)
+  # generate the 3D array of which individual (i) was seen by which trap (j) at each period (k)
+  camera_trap_full <- sim_trap_interac(homeranges, ntraps, nsample_cap, trap_detec)
+  # collapse the jth dimension to obtain the capture history for each individual
+  capture_hist <- create_cap_hist(homeranges, nsample_cap, camera_trap_full)
+
+  return(capture_hist)
+}
+
+capture_hist <- generate_capture_hist(10, 3, 5, 0.3, homeranges)
+```
+
+
 
 # Output Data
 
@@ -380,7 +521,7 @@ write.table(presence_absence, file = "presence-absence-data.csv", col.names = FA
 
 # remove capture-histories of 0s
 
-capture_hist <- capture_hist[rowSums(capture_hist==0, na.rm=TRUE)<ncol(capture_hist), ]
+capture_hist <- capture_hist[rowSums(capture_hist == 0, na.rm = TRUE) < ncol(capture_hist), ]
 
 # .txt format
 write.table(capture_hist, file = "capture-recapture-data.txt", col.names = FALSE, sep = " ", row.names = FALSE)
