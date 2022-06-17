@@ -575,7 +575,6 @@ We can now generate our capture-recapture and presence-absence data.
 #' @examples
 #' capture_hist <- generate_capture_hist(10, 3, 5, 0.3, homeranges)
 generate_capture_hist <- function(ntraps, nsample_cap, tau, homeranges) {
-  n <- nrow(homeranges)
   # place camera traps in study area
   traps <- define_traps(ntraps)
   # calculate the probabilities of detection for each individual by each trap
