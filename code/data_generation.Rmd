@@ -107,7 +107,7 @@ define_traps <- function(ntraps) {
 # traps <- define_traps(ntraps)
 # # plot traps on study area with homeranges included
 # par(pty = "s", mar = c(5, 4, 4, 8), xpd = TRUE)
-# 
+#
 # plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
 # points(traps, col = "red", pch = 15)
 # legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, col = c("black", "red"), pch = c(1, 15))
@@ -185,8 +185,8 @@ half_norm_detec <- function(d, tau) {
 #'   text(homeranges, labels = rownames(homeranges), cex = 1, font = 2, pos = 2, col = "blue")
 #'   legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, col = c("black", "red"), pch = c(1, 15))
 #' }
-calc_detection <- function(n, ntraps, homeranges, traps, tau) {
-
+calc_detection <- function(ntraps, homeranges, traps, tau) {
+  n <- nrow(homeranges)
   # 2D matrix of detection probabilities for each
   # individual i and each trap j
   trap_detec <- array(data = 0, dim = c(n, ntraps))
@@ -209,10 +209,10 @@ calc_detection <- function(n, ntraps, homeranges, traps, tau) {
 
 # tau <- 0.3
 # trap_detec <- calc_detection(n, ntraps, homeranges, traps, tau)
-# 
+#
 # # plot individuals and their camera trap detection probabilities
 # # labelled for trap j. Blue label is individual i number.
-# 
+#
 # for (j in 1:ntraps) {
 #   par(pty = "s", mar = c(5, 4, 4, 8), xpd = TRUE)
 #   plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
@@ -278,7 +278,7 @@ sim_trap_interac <- function(homeranges, ntraps, nsample_cap, trap_detec) {
 
 # nsample_cap <- 5
 # camera_trap_full <- sim_trap_interac(homeranges, ntraps, nsample_cap, trap_detec)
-# 
+#
 # # plot number of times each individual was seen by each trap
 # trap_counts <- rowSums(camera_trap_full, dims = 2)
 # for (j in 1:ntraps) {
@@ -386,7 +386,7 @@ setup_grid <- function(nsites) {
 
 # nsites <- 16
 # regions <- setup_grid(nsites)
-# 
+#
 # # plot grid cells on study area with homerange centers and individuals labeled
 # par(pty = "s")
 # plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
@@ -540,7 +540,7 @@ gen_heatmap <- function(presence_absence, nsites) {
 # nsample_pa <- 7
 # presence_absence <- sim_presence_absence(nsites, nsample_pa, homeranges, regions, tau)
 # gen_heatmap(presence_absence, nsites)
-# 
+#
 # # plot grid cells on study area with homerange centers and individuals labeled
 # par(pty = "s")
 # plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
@@ -574,11 +574,12 @@ We can now generate our capture-recapture and presence-absence data.
 #'
 #' @examples
 #' capture_hist <- generate_capture_hist(10, 3, 5, 0.3, homeranges)
-generate_capture_hist <- function(n, ntraps, nsample_cap, tau, homeranges) {
+generate_capture_hist <- function(ntraps, nsample_cap, tau, homeranges) {
+  n <- nrow(homeranges)
   # place camera traps in study area
   traps <- define_traps(ntraps)
   # calculate the probabilities of detection for each individual by each trap
-  trap_detec <- calc_detection(n, ntraps, homeranges, traps, tau)
+  trap_detec <- calc_detection(ntraps, homeranges, traps, tau)
   # generate the 3D array of which individual (i) was seen by which trap (j) at each period (k)
   camera_trap_full <- sim_trap_interac(homeranges, ntraps, nsample_cap, trap_detec)
   # collapse the jth dimension to obtain the capture history for each individual
@@ -600,7 +601,7 @@ generate_capture_hist <- function(n, ntraps, nsample_cap, tau, homeranges) {
 #' @export
 #'
 #' @examples
-generate_presence_absence <- function(nsites, nsample_pa, homeranges, tau) {
+generate_presence_absence <- function(nsites, nsample_pa, tau, homeranges) {
 
   # setup the study area grid
   regions <- setup_grid(nsites)
@@ -633,10 +634,10 @@ ntraps <- 3
 # homeranges for the n individuals
 homeranges <- create_homeranges(n)
 
-capture_hist <- generate_capture_hist(n, ntraps, nsample_cap, tau, homeranges)
+capture_hist <- generate_capture_hist(ntraps, nsample_cap, tau, homeranges)
 capture_hist
 
-presence_absence <- generate_presence_absence(nsites, nsample_pa, homeranges, tau)
+presence_absence <- generate_presence_absence(nsites, nsample_pa, tau, homeranges)
 presence_absence
 ```
 
