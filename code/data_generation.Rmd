@@ -39,14 +39,9 @@ traps <- define_traps(ntraps)
 # plot traps on study area with homeranges included
 par(pty = "s", mar = c(5, 4, 4, 8), xpd = TRUE)
 
-# ntraps <- 3
-# traps <- define_traps(ntraps)
-# # plot traps on study area with homeranges included
-# par(pty = "s", mar = c(5, 4, 4, 8), xpd = TRUE)
-#
-# plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
-# points(traps, col = "red", pch = 15)
-# legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, col = c("black", "red"), pch = c(1, 15))
+plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
+points(traps, col = "red", pch = 15)
+legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, col = c("black", "red"), pch = c(1, 15))
 ```
 
 ## Trap detection probabilities
@@ -57,22 +52,18 @@ We calculate the detection probabilities of each individual for each trap.
 tau <- 0.3
 trap_detec <- calc_detection(ntraps, homeranges, traps, tau)
 
+# plot individuals and their camera trap detection probabilities
+# labelled for trap j. Blue label is individual i number.
 
-# tau <- 0.3
-# trap_detec <- calc_detection(n, ntraps, homeranges, traps, tau)
-#
-# # plot individuals and their camera trap detection probabilities
-# # labelled for trap j. Blue label is individual i number.
-#
-# for (j in 1:ntraps) {
-#   par(pty = "s", mar = c(5, 4, 4, 8), xpd = TRUE)
-#   plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
-#   points(x = traps[j, 1], y = traps[j, 2], col = "red", pch = 15)
-#   text(x = traps[j, 1], y = traps[j, 2], labels = paste(c("Trap", j), collapse = " "), cex = 1.5, font = 2, pos = 3)
-#   text(homeranges, labels = round(trap_detec[, j], 2), cex = 1, font = 2, pos = 3)
-#   text(homeranges, labels = rownames(homeranges), cex = 1, font = 2, pos = 2, col = "blue")
-#   legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, col = c("black", "red"), pch = c(1, 15))
-# }
+for (j in 1:ntraps) {
+  par(pty = "s", mar = c(5, 4, 4, 8), xpd = TRUE)
+  plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
+  points(x = traps[j, 1], y = traps[j, 2], col = "red", pch = 15)
+  text(x = traps[j, 1], y = traps[j, 2], labels = paste(c("Trap", j), collapse = " "), cex = 1.5, font = 2, pos = 3)
+  text(homeranges, labels = round(trap_detec[, j], 2), cex = 1, font = 2, pos = 3)
+  text(homeranges, labels = rownames(homeranges), cex = 1, font = 2, pos = 2, col = "blue")
+  legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, col = c("black", "red"), pch = c(1, 15))
+}
 ```
 
 ## Trap interactions
