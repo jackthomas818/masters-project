@@ -169,20 +169,5 @@ Output the Capture-Recapture and Presence-Absence data into formats
 that the supplementary code (Blanc 2014) can use.
 
 ```{r output}
-
-# Presence-absence
-# data structure: rows = sites; columns = occasions
-
-# .csv format
-write.table(presence_absence, file = "presence-absence-data.csv", col.names = FALSE, sep = ",", row.names = FALSE)
-
-# Capture-recapture
-# data structure: rows = individuals; columns = capture occasions
-
-# remove capture-histories of 0s
-
-capture_hist <- capture_hist[rowSums(capture_hist == 0, na.rm = TRUE) < ncol(capture_hist), ]
-
-# .txt format
-write.table(capture_hist, file = "capture-recapture-data.txt", col.names = FALSE, sep = " ", row.names = FALSE)
+output_data(presence_absence, capture_hist)
 ```
