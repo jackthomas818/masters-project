@@ -6,18 +6,14 @@
 library(coda)
 library(rjags)
 
-# Setup directory
-# setwd(“your-directory”)
-
 #---------------------- patch occupancy data ----------------------------#
 # Presence-absence data structure: rows = sites; columns = occasions
-y <- read.csv("presence-absence-data.csv", header = FALSE) # load presence-absence data
+y <- read.csv("code/presence-absence-data.csv", header = FALSE) # load presence-absence data
 nsites <- dim(y)[1]
 nsurvs <- dim(y)[2]
 #--------------------- capture-recapture data -----------------------------#
 # Capture-recapture data structure : rows = individuals; columns = capture occasions
-mydata <- read.table("capture-recapture-data.txt", header = FALSE) # load capture-recapture data
-mydata <- matrix(mydata)
+mydata <- read.table("code/capture-recapture-data.txt", header = FALSE) # load capture-recapture data
 extra <- 250 # define large number of extra individual capture histories
 n <- nrow(mydata) # number of observed individuals
 M <- extra + n
@@ -69,7 +65,7 @@ for (i in 1:nsites){
     mean.p0 ~ dnorm(0,0.1)
     sigmaeps <- 1/(sdeps*sdeps)
     sdeps ~ dunif(0,10)
-
+           
      # priors for detection probability in CR likelihood
     mumup ~ dlogis(0,1)
     sigmeta ~ dgamma(1.5,37.5)
@@ -95,3 +91,6 @@ inits <- list(init1, init2, init3)
 #-------------------- Call jags from R -----------------------#
 jmodel <- jags.model("CRandPO_HET.txt", mydatax, inits, n.chains = 3, n.adapt = 2500)
 jsample <- coda.samples(jmodel, parameters, n.iter = 15000, thin = 1)
+
+
+summary(jsample)
