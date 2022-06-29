@@ -520,5 +520,5 @@ output_data <- function(presence_absence, capture_hist) {
   # .txt format
   write.table(capture_hist, file = "capture-recapture-data.txt", col.names = FALSE, sep = " ", row.names = FALSE)
 
-  return("Done")
+  return("Done outputting data: capture-recapture-data.txt and presence-absence-data.csv")
 }
