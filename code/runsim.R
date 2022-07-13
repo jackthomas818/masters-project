@@ -5,34 +5,40 @@ library(rjags)
 print("finished loading libraries")
 
 # source files
-source("code/data_generation_funcs.R")
+source("./data_generation_funcs.R")
 
-# command line arguments as parameters
-# nsites n_total nsample_cap nsample_pa tau ntraps seed
-args = commandArgs(trailingOnly=TRUE)
+args <- commandArgs(trailingOnly = TRUE)
+
+task_id <- strtoi(args[1])
+
+params_matrix <- read.csv("./parameter_matrix.csv")
+
+print("finished loading parameter matrix")
+
+params <- params_matrix[1, ]
 
 # generate data
 
 # number of sites
-nsites <- strtoi(args[1])
+nsites <- as.integer(params["nsites"])
 
 # number of individuals in capture history
-n_total <- strtoi(args[2])
+n_total <- as.integer(params["N"])
 
 # number of sampling occasions in capture-recapture
-nsample_cap <- strtoi(args[3])
+nsample_cap <- as.integer(params["nsample_cap"])
 
 # number of sampling occasions in presence-absence
-nsample_pa <- strtoi(args[4])
+nsample_pa <- as.integer(params["nsample_pa"])
 
 # amount of movement for the species
-tau <- as.double(args[5])
+tau <- as.double(params["tau"])
 
 # number of camera traps
-ntraps <- strtoi(args[6])
+ntraps <- as.integer(params["ntraps"])
 
 # setting seed
-set.seed(strtoi(args[7]))
+set.seed(as.integer(params["seed"]))
 
 # homeranges for the n individuals
 homeranges <- create_homeranges(n_total)
@@ -49,12 +55,12 @@ output_data(presence_absence, capture_hist)
 
 #---------------------- patch occupancy data ----------------------------#
 # Presence-absence data structure: rows = sites; columns = occasions
-y <- read.csv("code/presence-absence-data.csv", header = FALSE) # load presence-absence data
+y <- read.csv("./presence-absence-data.csv", header = FALSE) # load presence-absence data
 nsites <- dim(y)[1]
 nsurvs <- dim(y)[2]
 #--------------------- capture-recapture data -----------------------------#
 # Capture-recapture data structure : rows = individuals; columns = capture occasions
-mydata <- read.table("code/capture-recapture-data.txt", header = FALSE) # load capture-recapture data
+mydata <- read.table("./capture-recapture-data.txt", header = FALSE) # load capture-recapture data
 extra <- 250 # define large number of extra individual capture histories
 n <- nrow(mydata) # number of observed individuals
 M <- extra + n
@@ -106,7 +112,7 @@ for (i in 1:nsites){
     mean.p0 ~ dnorm(0,0.1)
     sigmaeps <- 1/(sdeps*sdeps)
     sdeps ~ dunif(0,10)
-           
+
      # priors for detection probability in CR likelihood
     mumup ~ dlogis(0,1)
     sigmeta ~ dgamma(1.5,37.5)
@@ -132,13 +138,9 @@ inits <- list(init1, init2, init3)
 #-------------------- Call jags from R -----------------------#
 jmodel <- jags.model("CRandPO_HET.txt", mydatax, inits, n.chains = 3, n.adapt = 2500)
 jsample <- coda.samples(jmodel, parameters, n.iter = 15000, thin = 1)
-save(jsample,file="code/jsample")
+save(jsample, file = "jsample")
 
-model = load("code/jsample")
-
-# Get summary statistics 
+# Get summary statistics
 s <- summary(jsample)
 
-write.table(s$statistics,file="code/model_statistics_.txt")
-
-
+write.table(s$statistics, file = paste0("model_statistics_",task_id,".txt"))
