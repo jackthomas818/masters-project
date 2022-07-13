@@ -7,25 +7,32 @@ print("finished loading libraries")
 # source files
 source("code/data_generation_funcs.R")
 
+# command line arguments as parameters
+# nsites n_total nsample_cap nsample_pa tau ntraps seed
+args = commandArgs(trailingOnly=TRUE)
+
 # generate data
 
 # number of sites
-nsites <- 4**2
+nsites <- strtoi(args[1])
 
 # number of individuals in capture history
-n_total <- 10
+n_total <- strtoi(args[2])
 
 # number of sampling occasions in capture-recapture
-nsample_cap <- 5
+nsample_cap <- strtoi(args[3])
 
 # number of sampling occasions in presence-absence
-nsample_pa <- 7
+nsample_pa <- strtoi(args[4])
 
 # amount of movement for the species
-tau <- 0.3
+tau <- as.double(args[5])
 
 # number of camera traps
-ntraps <- 3
+ntraps <- strtoi(args[6])
+
+# setting seed
+set.seed(strtoi(args[7]))
 
 # homeranges for the n individuals
 homeranges <- create_homeranges(n_total)
