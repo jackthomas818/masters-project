@@ -1,5 +1,5 @@
 ## Load packages
-library(tidyr)
+library(tidyverse)
 
 ## Set simulation parameters
 debug <- TRUE
@@ -25,4 +25,4 @@ pars_mat <- crossing(
   add_column(seed = as.integer(1e6 * runif(nrow(.)))) %>%
   rowid_to_column("task")
 
-write_csv(pars_mat, "code/parameter_matrix.csv")
+write_csv(pars_mat, "./parameter_matrix.csv")
