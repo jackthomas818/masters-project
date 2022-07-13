@@ -1,5 +1,5 @@
 ## Load packages
-library(tidyverse)
+library(tidyr)
 
 ## Set simulation parameters
 debug <- TRUE
@@ -13,8 +13,12 @@ if(!debug){
 
 ## Define simulation parameters
 pars_mat <- crossing(
-  nsites = c(10, 25, 50, 100),
-  tau = c(0.1, 0.2, 0.3, 0.4, 0.5)
+  N = c(10, 25, 50, 100),
+  tau = c(0.1, 0.2, 0.3, 0.4, 0.5),
+  nsites = 4**2,
+  nsample_cap = 5,
+  nsample_pa = 7,
+  ntraps = 3
 ) %>%
   rowid_to_column("sim") %>%
   crossing(rep = 1:nrep) %>%
