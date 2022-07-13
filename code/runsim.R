@@ -138,9 +138,9 @@ inits <- list(init1, init2, init3)
 #-------------------- Call jags from R -----------------------#
 jmodel <- jags.model("CRandPO_HET.txt", mydatax, inits, n.chains = 3, n.adapt = 2500)
 jsample <- coda.samples(jmodel, parameters, n.iter = 15000, thin = 1)
-save(jsample, file = "jsample")
+save(jsample, file = paste0("coda_samples_", task_id))
 
 # Get summary statistics
 s <- summary(jsample)
 
-write.table(s$statistics, file = paste0("model_statistics_",task_id,".txt"))
+write.table(s$statistics, file = paste0("model_statistics_", task_id, ".txt"))
