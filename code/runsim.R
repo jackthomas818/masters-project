@@ -15,11 +15,13 @@ args <- commandArgs(trailingOnly = TRUE)
 task_id_str <- args[1]
 task_id <- strtoi(args[1])
 
+print(paste0("task id: ",task_id_str))
+
 params_matrix <- read.csv("./parameter_matrix.csv")
 
 print("finished loading parameter matrix")
 
-params <- params_matrix[1, ]
+params <- params_matrix[task_id, ]
 
 # generate data
 
