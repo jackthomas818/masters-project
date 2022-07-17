@@ -7,7 +7,7 @@ library(readr)
 debug <- TRUE
 
 if(debug){
-  nrep <- 2
+  nrep <- 1
 }
 if(!debug){
   nrep <- 50
@@ -15,8 +15,8 @@ if(!debug){
 
 ## Define simulation parameters
 pars_mat <- crossing(
-  N = c(10, 25, 50, 100),
-  tau = c(0.1, 0.2, 0.3, 0.4, 0.5),
+  N = c(10, 25, 50),
+  tau = c(0.5),
   nsites = 4**2,
   nsample_cap = 5,
   nsample_pa = 7,
