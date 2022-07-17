@@ -1,6 +1,9 @@
 # Load packages
 library(coda)
 library(rjags)
+library(tictoc)
+
+tic()
 
 print("finished loading libraries")
 
@@ -9,6 +12,7 @@ source("./data_generation_funcs.R")
 
 args <- commandArgs(trailingOnly = TRUE)
 
+task_id_str <- args[1]
 task_id <- strtoi(args[1])
 
 params_matrix <- read.csv("./parameter_matrix.csv")
@@ -49,18 +53,18 @@ capture_hist
 presence_absence <- generate_presence_absence(nsites, nsample_pa, tau, homeranges)
 presence_absence
 
-output_data(presence_absence, capture_hist)
+output_data(presence_absence, capture_hist, task_id_str)
 
 # Supplementary Code by Blanc et al. (2014)
 
 #---------------------- patch occupancy data ----------------------------#
 # Presence-absence data structure: rows = sites; columns = occasions
-y <- read.csv("./presence-absence-data.csv", header = FALSE) # load presence-absence data
+y <- read.csv(paste0("./presence-absence-data-",task_id_str,".csv"), header = FALSE) # load presence-absence data
 nsites <- dim(y)[1]
 nsurvs <- dim(y)[2]
 #--------------------- capture-recapture data -----------------------------#
 # Capture-recapture data structure : rows = individuals; columns = capture occasions
-mydata <- read.table("./capture-recapture-data.txt", header = FALSE) # load capture-recapture data
+mydata <- read.table(paste0("./capture-recapture-data-",task_id_str,".txt"), header = FALSE) # load capture-recapture data
 extra <- 250 # define large number of extra individual capture histories
 n <- nrow(mydata) # number of observed individuals
 M <- extra + n
@@ -144,3 +148,5 @@ save(jsample, file = paste0("coda_samples_", task_id))
 s <- summary(jsample)
 
 write.table(s$statistics, file = paste0("model_statistics_", task_id, ".txt"))
+
+print(tictoc::toc())
