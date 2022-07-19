@@ -149,6 +149,8 @@ save(jsample, file = paste0("coda_samples_", task_id))
 # Get summary statistics
 s <- summary(jsample)
 
-write.table(s$statistics, file = paste0("model_statistics_", task_id, ".txt"))
+all_table <- cbind(s$statistics, s$quantiles)
+
+write.table(all_table, file = paste0("model_statistics_", task_id, ".txt"))
 
 print(tictoc::toc())
