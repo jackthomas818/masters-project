@@ -496,8 +496,9 @@ generate_presence_absence <- function(nsites, nsample_pa, tau, homeranges) {
 #' Function that outputs the capture-recapture and presence-absence data
 #' into formats usable by the supplementary code of Blanc (2014).
 #'
-#' @param presence_absence
-#' @param capture_hist
+#' @param presence_absence returned data from generate_presence_absence
+#' @param capture_hist returned data from generate_capture_hist
+#' @param id a unique identifier for the outputted files
 #'
 #' @return "Done" message
 #' @export
