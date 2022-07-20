@@ -1,0 +1,49 @@
+
+model{
+    # Patch-occupancy (PO) likelihood
+for (i in 1:nsites){
+    truocc[i] ~ dbern(psi[i]) # true occupancy for site i
+    logit(psi[i]) <- mupsi + betapsi[i] # occupancy probability as a function of µ<U+03C8> and a site random effect ßs
+    betapsi[i] ~ dnorm(0,sigmabeta)
+
+    logit(ppo[i]) <- logitppo[i] # pOs = site-dependant detection probability from PO model
+    logitppo[i] ~ dnorm(mean.p0,sigmaeps)
+
+ # observation model
+  for (t in 1:nsurvs) {
+    y[i,t] ~ dbern(effp[i,t])
+    effp[i,t] <- truocc[i]*ppo[i]
+  }
+}
+
+    # Capture-recapture (CR) likelihood
+ for(i in 1:M){
+    x[i] ~ dbin(pee[i],k)
+    pee[i] <- pcr[i]*step(N-i)  # pcr = individual detection probability pi from CR model
+    logit(pcr[i]) <- mumup + xi*etap[i] # integration of an individual random effect <U+03B7>i
+    etap[i] ~ dnorm(0,sigmeta)
+ }
+
+    N ~ dpois(lamn)T(0,M)
+    psi0 <- 1/(1+exp(-mupsi))  # µ<U+03C8> back transformed
+    log(lamn) <- log(-log(1-psi0)) # definition of <U+03BB> as a function of <U+03C8>
+    mumup0 <- 1/(1+exp(-mumup)) # µp back transformed
+    zerouse ~ dpois(comb)
+    comb <- logfact(M)-logfact(N)+logfact((N-n)*step(N-n))
+
+    # priors for occupancy probability
+    mupsi ~ dnorm(0,0.2)
+    sigmabeta <- 1/(sdbeta*sdbeta)
+    sdbeta~ dunif(0,5)
+
+     # priors for detection probability in PO likelihood
+    mean.p0 ~ dnorm(0,0.1)
+    sigmaeps <- 1/(sdeps*sdeps)
+    sdeps ~ dunif(0,10)
+
+     # priors for detection probability in CR likelihood
+    mumup ~ dlogis(0,1)
+    sigmeta ~ dgamma(1.5,37.5)
+    xi ~ dnorm(0,1)
+}
+    
