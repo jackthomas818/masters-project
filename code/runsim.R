@@ -3,6 +3,15 @@ library(coda)
 library(rjags)
 library(tictoc)
 
+# R script for running a simulation study. Uses a parameter matrix
+# created by generate_parameter_matrix.R. Takes the task id as a command
+# line argument,which corresponds to a row of the parameter matrix.
+# JAGS code taken from Blanc et. al (2014). This simulation study
+# intends to test the model suggested by Blanc et. al (2014). Outputs
+# model_statistics_* text files with the summary statistics for the coda
+# samples.
+
+
 tic()
 
 print("finished loading libraries")
@@ -15,8 +24,9 @@ args <- commandArgs(trailingOnly = TRUE)
 task_id_str <- args[1]
 task_id <- strtoi(args[1])
 
-print(paste0("task id: ",task_id_str))
+print(paste0("task id: ", task_id_str))
 
+# parameter matrix from generate_parameter_matrix.R
 params_matrix <- read.csv("./parameter_matrix.csv")
 
 print("finished loading parameter matrix")
@@ -61,12 +71,12 @@ output_data(presence_absence, capture_hist, task_id_str)
 
 #---------------------- patch occupancy data ----------------------------#
 # Presence-absence data structure: rows = sites; columns = occasions
-y <- read.csv(paste0("./presence-absence-data-",task_id_str,".csv"), header = FALSE) # load presence-absence data
+y <- read.csv(paste0("./presence-absence-data-", task_id_str, ".csv"), header = FALSE) # load presence-absence data
 nsites <- dim(y)[1]
 nsurvs <- dim(y)[2]
 #--------------------- capture-recapture data -----------------------------#
 # Capture-recapture data structure : rows = individuals; columns = capture occasions
-mydata <- read.table(paste0("./capture-recapture-data-",task_id_str,".txt"), header = FALSE) # load capture-recapture data
+mydata <- read.table(paste0("./capture-recapture-data-", task_id_str, ".txt"), header = FALSE) # load capture-recapture data
 extra <- 250 # define large number of extra individual capture histories
 n <- nrow(mydata) # number of observed individuals
 M <- extra + n
