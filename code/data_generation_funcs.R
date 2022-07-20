@@ -496,19 +496,20 @@ generate_presence_absence <- function(nsites, nsample_pa, tau, homeranges) {
 #' Function that outputs the capture-recapture and presence-absence data
 #' into formats usable by the supplementary code of Blanc (2014).
 #'
-#' @param presence_absence
-#' @param capture_hist
+#' @param presence_absence returned data from generate_presence_absence
+#' @param capture_hist returned data from generate_capture_hist
+#' @param id a unique identifier for the outputted files
 #'
 #' @return "Done" message
 #' @export
 #'
 #' @examples
-output_data <- function(presence_absence, capture_hist) {
+output_data <- function(presence_absence, capture_hist, id) {
   # Presence-absence
   # data structure: rows = sites; columns = occasions
 
   # .csv format
-  write.table(presence_absence, file = "presence-absence-data.csv", col.names = FALSE, sep = ",", row.names = FALSE)
+  write.table(presence_absence, file = paste0("./presence-absence-data-",id,".csv"), col.names = FALSE, sep = ",", row.names = FALSE)
 
   # Capture-recapture
   # data structure: rows = individuals; columns = capture occasions
@@ -518,7 +519,7 @@ output_data <- function(presence_absence, capture_hist) {
   capture_hist <- capture_hist[rowSums(capture_hist == 0, na.rm = TRUE) < ncol(capture_hist), ]
 
   # .txt format
-  write.table(capture_hist, file = "capture-recapture-data.txt", col.names = FALSE, sep = " ", row.names = FALSE)
+  write.table(capture_hist, file = paste0("./capture-recapture-data-",id,".txt"), col.names = FALSE, sep = " ", row.names = FALSE)
 
-  return("Done")
+  return(paste0("Done outputting data: capture-recapture-data-",id,".txt and presence-absence-data-",id,".csv"))
 }
