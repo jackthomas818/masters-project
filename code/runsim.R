@@ -72,18 +72,18 @@ for (rep in 1:reps) {
   presence_absence <- generate_presence_absence(nsites, nsample_pa, tau, homeranges)
   presence_absence
 
-  output_data(presence_absence, capture_hist, paste0(task_id_str,"-",rep))
+  output_data(presence_absence, capture_hist, paste0(task_id_str, "-", rep))
 
   # Supplementary Code by Blanc et al. (2014)
 
   #---------------------- patch occupancy data ----------------------------#
   # Presence-absence data structure: rows = sites; columns = occasions
-  y <- read.csv(paste0("./presence-absence-data-", task_id_str, ".csv"), header = FALSE) # load presence-absence data
+  y <- read.csv(paste0("./presence-absence-data-", task_id_str, "-", toString(rep), ".csv"), header = FALSE) # load presence-absence data
   nsites <- dim(y)[1]
   nsurvs <- dim(y)[2]
   #--------------------- capture-recapture data -----------------------------#
   # Capture-recapture data structure : rows = individuals; columns = capture occasions
-  mydata <- read.table(paste0("./capture-recapture-data-", task_id_str, ".txt"), header = FALSE) # load capture-recapture data
+  mydata <- read.table(paste0("./capture-recapture-data-", task_id_str, "-", toString(rep), ".txt"), header = FALSE) # load capture-recapture data
   extra <- 250 # define large number of extra individual capture histories
   n <- nrow(mydata) # number of observed individuals
   M <- extra + n
