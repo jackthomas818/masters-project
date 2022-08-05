@@ -114,9 +114,9 @@ for (rep in 1:reps) {
   # Get summary statistics
   s <- summary(jsample)
 
-  all_table <- cbind(s$statistics, s$quantiles)
+  all_table <- cbind(s$statistics, s$quantiles, seed)
 
-  write.table(all_table, file = paste0("model_statistics_", task_id_str, "_", toString(rep), "_", toString(seed), ".txt"))
+  write.table(all_table, file = paste0("model_statistics_", task_id_str, "_", toString(rep), ".txt"))
 }
 
 
