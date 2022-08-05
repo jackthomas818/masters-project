@@ -17,6 +17,6 @@ echo "Start at `date`"
 module load r/4.1.2
 export R_LIBS=/home/jackthom/R/
 
-Rscript ./runsim.R $SLURM_ARRAY_TASK_ID >& ./log_${SLURM_JOB_ID}.txt
+Rscript ./runsim.R $SLURM_ARRAY_TASK_ID >& ./log_${SLURM_ARRAY_TASK_ID}_${SLURM_JOB_ID}.txt
 
 echo "Done at `date`"
