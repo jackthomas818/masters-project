@@ -107,8 +107,16 @@ for (rep in 1:reps) {
   inits <- list(init1, init2, init3)
 
   #-------------------- Call jags from R -----------------------#
-  jmodel <- jags.model("CRandPO_HET.txt", mydatax, inits, n.chains = 3, n.adapt = 2500)
-  jsample <- coda.samples(jmodel, parameters, n.iter = 15000, thin = 1)
+  jmodel <- tryCatch(jags.model("CRandPO_HET.txt", mydatax, inits, n.chains = 3, n.adapt = 2500),error=function(e) NULL)
+  if(is.null(jmodel)){
+    print("jmodel failed to initialize")
+    next
+  }
+  jsample <- tryCatch(coda.samples(jmodel, parameters, n.iter = 15000, thin = 1),error=function(e) NULL)
+  if(is.null(jsample)){
+    print("jsample failed to work")
+    next
+  }
   save(jsample, file = paste0("coda_samples_", task_id))
 
   # Get summary statistics
