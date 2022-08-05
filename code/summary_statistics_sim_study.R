@@ -13,13 +13,7 @@ args <- commandArgs(trailingOnly = TRUE)
 # directory of simulation study
 directory <- args[1]
 
-#directory <- "SimStudy4/"
-
-# Getting presence-absence data
-pa_files <- list.files(directory, pattern = "presence-absence")
-pa_data <- lapply(paste0(directory, "\\", pa_files), function(i) {
-  read.csv(i, header = FALSE)
-})
+#directory <- "SimStudy4"
 
 # Getting capture-recapture data
 cr_files <- list.files(directory, pattern = "capture-recapture")
@@ -41,7 +35,7 @@ N_naive_se <- array(data = NA, dim = nrow(params_matrix))
 
 for (task_id in 1:nrow(params_matrix)) {
   model_data <- read.table(paste0(directory, "/model_statistics_", task_id, ".txt"))
-  print(nrow(model_data))
+
   cr_data <- read.table(paste0(directory, "/capture-recapture-data-", task_id, ".txt"))
 
   N_mean[task_id] <- unlist(model_data["Mean"])[1]
@@ -69,5 +63,9 @@ all_data[, list(
   lower_95_N = mean(N_lower_95),
   upper_95_N = mean(N_upper_95)
 ), by = sim]
+
+
+# Output summary statistics
+write.csv(all_data,file=paste0("summary_stats_",directory,".csv"))
 
 toc()
