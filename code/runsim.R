@@ -40,27 +40,21 @@ params <- params_matrix[task_id, ]
 
 # number of sites
 nsites <- as.integer(params["nsites"])
-nsites
 
 # number of individuals in capture history
 n_total <- as.integer(params["N"])
-n_total
 
 # number of sampling occasions in capture-recapture
 nsample_cap <- as.integer(params["nsample_cap"])
-nsample_cap
 
 # number of sampling occasions in presence-absence
 nsample_pa <- as.integer(params["nsample_pa"])
-nsample_pa
 
 # amount of movement for the species
 tau <- as.double(params["tau"])
-tau
 
 # number of camera traps
 ntraps <- as.integer(params["ntraps"])
-ntraps
 
 for (rep in task_id:task_id) {
   # setting seed
