@@ -4,27 +4,18 @@ library(tidyr)
 library(readr)
 
 ## Set simulation parameters
-debug <- TRUE
-
-if(debug){
-  nrep <- 1
-}
-if(!debug){
-  nrep <- 50
-}
+debug <- FALSE
 
 ## Define simulation parameters
 pars_mat <- crossing(
-  N = c(10, 25, 50),
-  tau = c(0.5),
+  N = c(10, 25, 50,75,100,125,150,175,200),
+  tau = c(0.15,0.20,0.25,0.30,0.35,0.4,0.45,0.5,0.55),
   nsites = 4**2,
-  nsample_cap = 5,
-  nsample_pa = 7,
-  ntraps = 3
+  nsample_cap = 7,
+  nsample_pa = 5,
+  ntraps = c(3,4,5)
 ) %>%
   rowid_to_column("sim") %>%
-  crossing(rep = 1:nrep) %>%
-  add_column(seed = as.integer(1e6 * runif(nrow(.)))) %>%
   rowid_to_column("task")
 
 write_csv(pars_mat, "./parameter_matrix.csv")
