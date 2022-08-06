@@ -40,23 +40,29 @@ params <- params_matrix[task_id, ]
 
 # number of sites
 nsites <- as.integer(params["nsites"])
+nsites
 
 # number of individuals in capture history
 n_total <- as.integer(params["N"])
+n_total
 
 # number of sampling occasions in capture-recapture
 nsample_cap <- as.integer(params["nsample_cap"])
+nsample_cap
 
 # number of sampling occasions in presence-absence
 nsample_pa <- as.integer(params["nsample_pa"])
+nsample_pa
 
 # amount of movement for the species
 tau <- as.double(params["tau"])
+tau
 
 # number of camera traps
 ntraps <- as.integer(params["ntraps"])
+ntraps
 
-for (rep in 1:reps) {
+for (rep in task_id:task_id) {
   # setting seed
   seed <- as.integer(1e7 * runif(1))
   set.seed(seed)
@@ -107,13 +113,13 @@ for (rep in 1:reps) {
   inits <- list(init1, init2, init3)
 
   #-------------------- Call jags from R -----------------------#
-  jmodel <- tryCatch(jags.model("CRandPO_HET.txt", mydatax, inits, n.chains = 3, n.adapt = 2500),error=function(e) NULL)
-  if(is.null(jmodel)){
+  jmodel <- tryCatch(jags.model("CRandPO_HET.txt", mydatax, inits, n.chains = 3, n.adapt = 2500), error = function(e) NULL)
+  if (is.null(jmodel)) {
     print("jmodel failed to initialize")
     next
   }
-  jsample <- tryCatch(coda.samples(jmodel, parameters, n.iter = 15000, thin = 1),error=function(e) NULL)
-  if(is.null(jsample)){
+  jsample <- tryCatch(coda.samples(jmodel, parameters, n.iter = 15000, thin = 1), error = function(e) NULL)
+  if (is.null(jsample)) {
     print("jsample failed to work")
     next
   }

@@ -16,8 +16,8 @@ directory <- args[1]
 # number of repetitions per simulation
 reps <- strtoi(args[2])
 
-#directory <- "SimStudy6"
-#reps <- 1
+# directory <- "SimStudy6"
+# reps <- 50
 
 # parameter matrix from generate_parameter_matrix.R
 params_matrix <- read.csv(paste0(directory, "/parameter_matrix.csv"))
@@ -30,29 +30,38 @@ N_upper_95 <- array(data = NA, dim = nrow(params_matrix) * reps)
 n_captured <- array(data = NA, dim = nrow(params_matrix) * reps)
 N_sd <- array(data = NA, dim = nrow(params_matrix) * reps)
 N_naive_se <- array(data = NA, dim = nrow(params_matrix) * reps)
-
-pa_detects_total <- array(data = NA, dim = nrow(params_matrix))
+pa_detects_total <- array(data = NA, dim = nrow(params_matrix) * reps)
+sim <- array(data = NA, dim = nrow(params_matrix) * reps)
+tau <- array(data = NA, dim = nrow(params_matrix) * reps)
+N_actual <- array(data = NA, dim = nrow(params_matrix) * reps)
+seed <- array(data = NA, dim = nrow(params_matrix) * reps)
 
 count <- 1
 for (task_id in 1:nrow(params_matrix)) {
+  print(paste0(task_id, " out of ", nrow(params_matrix)))
   for (rep in 1:reps) {
-    if (task_id %% 100 == 0) {
-      print(paste0(task_id, " out of ", nrow(params_matrix)))
-    }
-
     model_file <- paste0(directory, "/model_statistics_", task_id, "_", rep, ".txt")
     if (file.exists(model_file)) {
       model_data <- tryCatch(read.table(model_file), error = function(e) NULL)
+    } else {
+      count <- count + 1
+      next
     }
 
     cr_file <- paste0(directory, "/capture-recapture-data-", task_id, "-", rep, ".txt")
     if (file.exists(cr_file)) {
       cr_data <- tryCatch(read.table(cr_file), error = function(e) NULL)
+    } else {
+      count <- count + 1
+      next
     }
 
     pa_file <- paste0(directory, "/presence-absence-data-", task_id, "-", rep, ".csv")
     if (file.exists(pa_file)) {
       pa_data <- tryCatch(read.csv(pa_file, header = FALSE), error = function(e) NULL)
+    } else {
+      count <- count + 1
+      next
     }
 
     # count number of presence detections
@@ -63,23 +72,29 @@ for (task_id in 1:nrow(params_matrix)) {
     N_upper_95[count] <- unlist(model_data["X97.5."])[1]
     N_sd[count] <- unlist(model_data["SD"])[1]
     N_naive_se[count] <- unlist(model_data["Naive.SE"])[1]
+    seed[count] <- unlist(model_data["seed"])[1]
 
     if (is.null(cr_data)) {
       n_captured[count] <- 0
     } else {
       n_captured[count] <- nrow(cr_data)
     }
+
+    sim[count] <- task_id
+    tau[count] <- unlist(params_matrix["tau"])[task_id]
+    N_actual[count] <- unlist(params_matrix["N"])[task_id]
+
     count <- count + 1
   }
 }
 
-all_data <- cbind(params_matrix, N_mean, n_captured, pa_detects_total, N_lower_95, N_upper_95, N_sd, N_naive_se)
+all_data <- data.frame(cbind(sim, N_actual, N_mean, n_captured, tau, pa_detects_total, N_lower_95, N_upper_95, N_sd, N_naive_se, seed))
 
 # Calculate means by simulation number
 setDT(all_data)
 
 summary_stats <- all_data[, list(
-  N_actual = mean(N),
+  N_actual = mean(N_actual),
   n_captured = mean(n_captured),
   pa_detects = mean(pa_detects_total),
   tau = mean(tau),
