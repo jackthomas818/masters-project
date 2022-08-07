@@ -56,7 +56,7 @@ tau <- as.double(params["tau"])
 # number of camera traps
 ntraps <- as.integer(params["ntraps"])
 
-for (rep in task_id:task_id) {
+for (rep in 1:reps) {
   # setting seed
   seed <- as.integer(1e7 * runif(1))
   set.seed(seed)
