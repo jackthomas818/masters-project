@@ -24,7 +24,7 @@ for (i in 1:nsites){
     etap[i] ~ dnorm(0,sigmeta)
  }
 
-    N ~ dpois(lamn)T(0,M)
+    N ~ dpois(lamn)T(n,M)
     psi0 <- 1/(1+exp(-mupsi))  # µ<U+03C8> back transformed
     log(lamn) <- log(-log(1-psi0)) # definition of <U+03BB> as a function of <U+03C8>
     mumup0 <- 1/(1+exp(-mumup)) # µp back transformed
