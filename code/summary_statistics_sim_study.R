@@ -122,8 +122,7 @@ summary_stats <- all_data[, list(
   N_mean = mean(N_mean),
   N_sd = mean(N_sd),
   N_naive_se = mean(N_naive_se),
-  lower_95_N = mean(N_lower_95),
-  upper_95_N = mean(N_upper_95)
+  credible_proportion = sum(cred_contains_actual_N, na.rm = TRUE) / reps
 ), by = sim]
 
 
