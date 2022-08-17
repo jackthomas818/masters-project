@@ -3,6 +3,25 @@ library(readr)
 library(tictoc)
 library(data.table)
 
+
+#' Calculate Credible Interval Proportion
+#'
+#' Function that calculates how many credible intervals
+#' contain the true value
+#'
+#' @param lower the array of lower bounds
+#' @param upper the array of upper bounds
+#' @param actual the true value to be covered
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cred_prop <- function(lower, upper, actual) {
+  cbind(lower <= actual & upper >= actual)
+}
+
+
 tic()
 
 print("finished loading libraries")
@@ -88,7 +107,9 @@ for (task_id in 1:nrow(params_matrix)) {
   }
 }
 
-all_data <- data.frame(cbind(sim, N_actual, N_mean, n_captured, tau, pa_detects_total, N_lower_95, N_upper_95, N_sd, N_naive_se, seed))
+cred_contains_actual_N <- array(cred_prop(N_lower_95, N_upper_95, N_actual))
+
+all_data <- data.frame(cbind(sim, N_actual, N_mean, n_captured, tau, pa_detects_total, N_lower_95, N_upper_95, cred_contains_actual_N, N_sd, N_naive_se, seed))
 
 # Calculate means by simulation number
 setDT(all_data)
