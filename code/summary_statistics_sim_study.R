@@ -3,7 +3,7 @@ library(readr)
 library(tictoc)
 library(data.table)
 
-options(scipen=999)
+options(scipen = 999)
 
 
 #' Calculate Credible Interval Proportion
@@ -112,7 +112,7 @@ for (task_id in 1:nrow(params_matrix)) {
 cred_contains_actual_N <- array(cred_prop(N_lower_95, N_upper_95, N_actual))
 
 # calculate bias
-N_bias = array((N_mean-N_actual)/N_actual)
+N_bias <- array((N_mean - N_actual) / N_actual)
 
 all_data <- data.frame(cbind(sim, N_actual, N_mean, N_bias, n_captured, tau, pa_detects_total, N_lower_95, N_upper_95, cred_contains_actual_N, N_sd, N_naive_se, seed))
 
@@ -125,12 +125,12 @@ summary_stats <- all_data[, list(
   pa_detects = mean(pa_detects_total),
   tau = mean(tau),
   N_mean = mean(N_mean),
+  N_mean_sd = sd(N_mean),
   N_bias = mean(N_bias),
   N_sd = mean(N_sd),
   N_naive_se = mean(N_naive_se),
   credible_proportion = sum(cred_contains_actual_N, na.rm = TRUE) / reps
 ), by = sim]
-
 
 # Output summary statistics and all_data
 write.csv(summary_stats, file = paste0("summary_stats_", directory, ".csv"))
