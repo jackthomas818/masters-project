@@ -117,7 +117,7 @@ for (rep in 1:reps) {
     print("jsample failed to work")
     next
   }
-  save(jsample, file = paste0("coda_samples_", task_id))
+  # save(jsample, file = paste0("coda_samples_", task_id))
 
   # Get summary statistics
   s <- summary(jsample)
