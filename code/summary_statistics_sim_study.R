@@ -128,6 +128,7 @@ summary_stats <- all_data[, list(
   N_mean_sd = sd(N_mean),
   N_bias = mean(N_bias),
   N_sd = mean(N_sd),
+  sd_bias = (sd(N_mean) - mean(N_sd))/mean(N_sd),
   N_naive_se = mean(N_naive_se),
   credible_proportion = sum(cred_contains_actual_N, na.rm = TRUE) / reps
 ), by = sim]
