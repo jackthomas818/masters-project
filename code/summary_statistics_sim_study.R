@@ -3,6 +3,27 @@ library(readr)
 library(tictoc)
 library(data.table)
 
+options(scipen = 999)
+
+
+#' Calculate Credible Interval Proportion
+#'
+#' Function that calculates how many credible intervals
+#' contain the true value
+#'
+#' @param lower the array of lower bounds
+#' @param upper the array of upper bounds
+#' @param actual the true value to be covered
+#'
+#' @return
+#' @export
+#'
+#' @examples
+cred_prop <- function(lower, upper, actual) {
+  cbind(lower <= actual & upper >= actual)
+}
+
+
 tic()
 
 print("finished loading libraries")
@@ -16,8 +37,8 @@ directory <- args[1]
 # number of repetitions per simulation
 reps <- strtoi(args[2])
 
-# directory <- "SimStudy6"
-# reps <- 50
+# directory <- "SimStudy9"
+# reps <- 20
 
 # parameter matrix from generate_parameter_matrix.R
 params_matrix <- read.csv(paste0(directory, "/parameter_matrix.csv"))
@@ -33,6 +54,8 @@ N_naive_se <- array(data = NA, dim = nrow(params_matrix) * reps)
 pa_detects_total <- array(data = NA, dim = nrow(params_matrix) * reps)
 sim <- array(data = NA, dim = nrow(params_matrix) * reps)
 tau <- array(data = NA, dim = nrow(params_matrix) * reps)
+nsites <- array(data = NA, dim = nrow(params_matrix) * reps)
+ntraps <- array(data = NA, dim = nrow(params_matrix) * reps)
 N_actual <- array(data = NA, dim = nrow(params_matrix) * reps)
 seed <- array(data = NA, dim = nrow(params_matrix) * reps)
 
@@ -82,13 +105,20 @@ for (task_id in 1:nrow(params_matrix)) {
 
     sim[count] <- task_id
     tau[count] <- unlist(params_matrix["tau"])[task_id]
+    nsites[count] <- unlist(params_matrix["nsites"])[task_id]
+    ntraps[count] <- unlist(params_matrix["ntraps"])[task_id]
     N_actual[count] <- unlist(params_matrix["N"])[task_id]
 
     count <- count + 1
   }
 }
 
-all_data <- data.frame(cbind(sim, N_actual, N_mean, n_captured, tau, pa_detects_total, N_lower_95, N_upper_95, N_sd, N_naive_se, seed))
+cred_contains_actual_N <- array(cred_prop(N_lower_95, N_upper_95, N_actual))
+
+# calculate bias
+N_bias <- array((N_mean - N_actual) / N_actual)
+
+all_data <- data.frame(cbind(sim, N_actual, N_mean, N_bias, n_captured, tau, nsites, ntraps, pa_detects_total, N_lower_95, N_upper_95, cred_contains_actual_N, N_sd, N_naive_se, seed))
 
 # Calculate means by simulation number
 setDT(all_data)
@@ -98,13 +128,16 @@ summary_stats <- all_data[, list(
   n_captured = mean(n_captured),
   pa_detects = mean(pa_detects_total),
   tau = mean(tau),
+  nsites = mean(nsites),
+  ntraps = mean(ntraps),
   N_mean = mean(N_mean),
+  N_mean_sd = sd(N_mean),
+  N_bias = mean(N_bias),
   N_sd = mean(N_sd),
+  sd_bias = (sd(N_mean) - mean(N_sd)) / mean(N_sd),
   N_naive_se = mean(N_naive_se),
-  lower_95_N = mean(N_lower_95),
-  upper_95_N = mean(N_upper_95)
+  credible_proportion = sum(cred_contains_actual_N, na.rm = TRUE) / reps
 ), by = sim]
-
 
 # Output summary statistics and all_data
 write.csv(summary_stats, file = paste0("summary_stats_", directory, ".csv"))
