@@ -119,7 +119,11 @@ cred_contains_actual_N <- array(cred_prop(N_lower_95, N_upper_95, N_actual))
 N_bias <- array((N_mean - N_actual) / N_actual)
 
 all_data <- data.frame(cbind(sim, N_actual, N_mean, N_bias, n_captured, tau, nsites, ntraps, pa_detects_total, N_lower_95, N_upper_95, cred_contains_actual_N, N_sd, N_naive_se, seed))
+#all_data <- read.csv("all_data_SimStudy8.csv")
 
+
+#directory <- "SimStudy8"
+#reps <- 50
 # Calculate means by simulation number
 setDT(all_data)
 
@@ -134,7 +138,7 @@ summary_stats <- all_data[, list(
   N_mean_sd = sd(N_mean),
   N_bias = mean(N_bias),
   N_sd = mean(N_sd),
-  sd_bias = (sd(N_mean) - mean(N_sd)) / mean(N_sd),
+  sd_bias = (mean(N_sd) - sd(N_mean)) / sd(N_mean),
   N_naive_se = mean(N_naive_se),
   credible_proportion = sum(cred_contains_actual_N, na.rm = TRUE) / reps
 ), by = sim]
