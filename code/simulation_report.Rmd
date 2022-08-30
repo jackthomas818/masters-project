@@ -1,0 +1,22 @@
+---
+title: "Simulation Report"
+author: "Jack Thomas"
+date: '2022-08-30'
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(ggplot2)
+library(readr)
+summary_stats_SimStudy8 <- read_csv("summary_stats_SimStudy8.csv")
+```
+
+
+```{r plot example}
+
+ggplot(data=summary_stats_SimStudy8,mapping = aes(x=tau,y=credible_proportion)) + geom_point() + facet_wrap(vars(N_actual))#,ntraps))
+```
+
