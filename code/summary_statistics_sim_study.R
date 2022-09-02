@@ -37,6 +37,7 @@ directory <- args[1]
 # number of repetitions per simulation
 reps <- strtoi(args[2])
 
+
 # directory <- "SimStudy9"
 # reps <- 20
 
@@ -59,19 +60,31 @@ ntraps <- array(data = NA, dim = nrow(params_matrix) * reps)
 N_actual <- array(data = NA, dim = nrow(params_matrix) * reps)
 seed <- array(data = NA, dim = nrow(params_matrix) * reps)
 
+# parameter for older simulations that use old format
+old <- FALSE
+
 count <- 1
 for (task_id in 1:nrow(params_matrix)) {
   print(paste0(task_id, " out of ", nrow(params_matrix)))
   for (rep in 1:reps) {
-    model_file <- paste0(directory, "/model_statistics_", task_id, "_", rep, ".txt")
+    if (old) {
+      model_file <- paste0(directory, "/model_statistics_", count, ".txt")
+    } else {
+      model_file <- paste0(directory, "/model_statistics_", task_id, "_", rep, ".txt")
+    }
+
     if (file.exists(model_file)) {
       model_data <- tryCatch(read.table(model_file), error = function(e) NULL)
     } else {
       count <- count + 1
       next
     }
+    if (old) {
+      cr_file <- paste0(directory, "/capture-recapture-data-", count, ".txt")
+    } else {
+      cr_file <- paste0(directory, "/capture-recapture-data-", task_id, "-", rep, ".txt")
+    }
 
-    cr_file <- paste0(directory, "/capture-recapture-data-", task_id, "-", rep, ".txt")
     if (file.exists(cr_file)) {
       cr_data <- tryCatch(read.table(cr_file), error = function(e) NULL)
     } else {
@@ -79,7 +92,12 @@ for (task_id in 1:nrow(params_matrix)) {
       next
     }
 
-    pa_file <- paste0(directory, "/presence-absence-data-", task_id, "-", rep, ".csv")
+    if (old) {
+      pa_file <- paste0(directory, "/presence-absence-data-", count, ".csv")
+    } else {
+      pa_file <- paste0(directory, "/presence-absence-data-", task_id, "-", rep, ".csv")
+    }
+
     if (file.exists(pa_file)) {
       pa_data <- tryCatch(read.csv(pa_file, header = FALSE), error = function(e) NULL)
     } else {
@@ -95,7 +113,11 @@ for (task_id in 1:nrow(params_matrix)) {
     N_upper_95[count] <- unlist(model_data["X97.5."])[1]
     N_sd[count] <- unlist(model_data["SD"])[1]
     N_naive_se[count] <- unlist(model_data["Naive.SE"])[1]
-    seed[count] <- unlist(model_data["seed"])[1]
+    
+    if(!old){
+      seed[count] <- unlist(model_data["seed"])[1]  
+    }
+    
 
     if (is.null(cr_data)) {
       n_captured[count] <- 0
@@ -119,11 +141,11 @@ cred_contains_actual_N <- array(cred_prop(N_lower_95, N_upper_95, N_actual))
 N_bias <- array((N_mean - N_actual) / N_actual)
 
 all_data <- data.frame(cbind(sim, N_actual, N_mean, N_bias, n_captured, tau, nsites, ntraps, pa_detects_total, N_lower_95, N_upper_95, cred_contains_actual_N, N_sd, N_naive_se, seed))
-#all_data <- read.csv("all_data_SimStudy8.csv")
+# all_data <- read.csv("all_data_SimStudy8.csv")
 
 
-#directory <- "SimStudy8"
-#reps <- 50
+# directory <- "SimStudy8"
+# reps <- 50
 # Calculate means by simulation number
 setDT(all_data)
 

@@ -11,12 +11,58 @@ output:
 knitr::opts_chunk$set(echo = TRUE)
 library(ggplot2)
 library(readr)
+summary_stats_SimStudy4 <- read_csv("summary_stats_SimStudy4.csv")
 summary_stats_SimStudy8 <- read_csv("summary_stats_SimStudy8.csv")
 ```
 
+# Simulation Study Report
 
-```{r plot example}
+The simulations that will be reported are simulations 4 through 8.
 
-ggplot(data=summary_stats_SimStudy8,mapping = aes(x=tau,y=credible_proportion)) + geom_point() + facet_wrap(vars(N_actual))#,ntraps))
+# First simulation
+
+Parameters for the first simulation (SimStudy4) were as follows:
+
+$N \in (10,25,50)$
+
+$\tau \in (0.25,0.35,0.45,0.55,0.65)$
+
+nsites $=16$
+
+nsample_cap $=5$
+
+nsample_pa $=7$
+
+ntraps $=3$
+
+Each simulation was repeated 50 times.
+
+```{r fig.height = 2, fig.width = 10}
+
+ggplot(data=summary_stats_SimStudy4,mapping = aes(x=tau,y=credible_proportion)) + geom_point() + facet_wrap(vars(N_actual)) + geom_hline(yintercept=0.95,lty=2)
+
+ggplot(data=summary_stats_SimStudy4,mapping = aes(x=n_captured,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual)) + geom_abline(slope=1)
+
+ggplot(data=summary_stats_SimStudy4,mapping = aes(x=tau,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual))
+
+ggplot(data=summary_stats_SimStudy4,mapping = aes(x=tau,y=N_bias)) + geom_point() + facet_wrap(vars(N_actual))
+
+ggplot(data=summary_stats_SimStudy4,mapping = aes(x=pa_detects,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual))
+
+ggplot(data=summary_stats_SimStudy4,mapping = aes(x=tau,y=sd_bias)) + geom_point() + facet_wrap(vars(N_actual))
+```
+
+
+```{r fig.height = 10, fig.width = 10}
+
+ggplot(data=summary_stats_SimStudy8,mapping = aes(x=tau,y=credible_proportion)) + geom_point() + facet_wrap(vars(N_actual,ntraps)) + geom_hline(yintercept=0.95,lty=2)
+
+ggplot(data=summary_stats_SimStudy8,mapping = aes(x=n_captured,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual,ntraps)) + geom_abline(slope=1)
+
+ggplot(data=summary_stats_SimStudy8,mapping = aes(x=tau,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual,ntraps))
+
+ggplot(data=summary_stats_SimStudy8,mapping = aes(x=pa_detects,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual,nsites))
+
+ggplot(data=summary_stats_SimStudy8,mapping = aes(x=tau,y=sd_bias)) + geom_point() + facet_wrap(vars(N_actual,ntraps))
 ```
 
