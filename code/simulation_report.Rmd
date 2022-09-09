@@ -84,24 +84,26 @@ Each simulation (81 total) was repeated 100 times.
 
 ```{r fig.height = 10, fig.width = 10}
 
-ggplot(data=summary_stats_SimStudy5,mapping = aes(x=tau,y=credible_proportion)) + geom_point() + facet_wrap(vars(N_actual), scales = "free") + geom_hline(yintercept=0.95,lty=2)
+SimStudy5 <- subset(summary_stats_SimStudy5,N_actual == 10 | N_actual == 50 | N_actual == 100 | N_actual == 175 )
+
+ggplot(data=SimStudy5,mapping = aes(x=tau,y=credible_proportion)) + geom_point() + facet_wrap(vars(N_actual), scales = "free") + geom_hline(yintercept=0.95,lty=2)
 
 ggsave("SimStudy5_credible_proportion_vs_tau.png",device="png")
 
-ggplot(data=summary_stats_SimStudy5,mapping = aes(x=n_captured,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual), scales = "free") + geom_abline(slope=1)
+ggplot(data=SimStudy5,mapping = aes(x=n_captured,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual), scales = "free") + geom_abline(slope=1)
 
 ggsave("SimStudy5_N_mean_vs_n_captured.png",device="png")
 
-ggplot(data=summary_stats_SimStudy5,mapping = aes(x=tau,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual), scales = "free")
+ggplot(data=SimStudy5,mapping = aes(x=tau,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual), scales = "free")
 ggsave("SimStudy5_N_mean_vs_tau.png",device="png")
 
-ggplot(data=summary_stats_SimStudy5,mapping = aes(x=tau,y=N_bias)) + geom_point() + facet_wrap(vars(N_actual), scales = "free")
+ggplot(data=SimStudy5,mapping = aes(x=tau,y=N_bias)) + geom_point() + facet_wrap(vars(N_actual), scales = "free")
 ggsave("SimStudy5_N_bias_vs_tau.png",device="png")
 
-ggplot(data=summary_stats_SimStudy5,mapping = aes(x=pa_detects,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual), scales = "free")
+ggplot(data=SimStudy5,mapping = aes(x=pa_detects,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual), scales = "free")
 ggsave("SimStudy5_N_mean_vs_pa_detects.png",device="png")
 
-ggplot(data=summary_stats_SimStudy5,mapping = aes(x=tau,y=sd_bias)) + geom_point() + facet_wrap(vars(N_actual), scales = "free")
+ggplot(data=SimStudy5,mapping = aes(x=tau,y=sd_bias)) + geom_point() + facet_wrap(vars(N_actual), scales = "free")
 ggsave("SimStudy5_sd_bias_vs_tau.png",device="png")
 ```
 
@@ -128,25 +130,27 @@ The simulation study failed at N_actual=200 due to a bug, so will not be include
 
 ```{r fig.height = 10, fig.width = 10}
 
-ggplot(data=summary_stats_SimStudy7,mapping = aes(x=tau,y=credible_proportion)) + geom_point() + facet_wrap(vars(N_actual,ntraps), scales = "free") + geom_hline(yintercept=0.95,lty=2)
+SimStudy7 <- subset(summary_stats_SimStudy7,N_actual == 10 | N_actual == 50 | N_actual == 100 | N_actual == 175)
+
+ggplot(data=SimStudy7,mapping = aes(x=tau,y=credible_proportion)) + geom_point() + facet_wrap(vars(N_actual,ntraps), scales = "free") + geom_hline(yintercept=0.95,lty=2)
 ggsave("SimStudy7_credible_proportion_vs_tau.png",device="png")
 
-ggplot(data=summary_stats_SimStudy7,mapping = aes(x=n_captured,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual,ntraps), scales = "free") + geom_abline(slope=1)
+ggplot(data=SimStudy7,mapping = aes(x=n_captured,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual,ntraps), scales = "free") + geom_abline(slope=1)
 ggsave("SimStudy7_N_mean_vs_n_captured.png",device="png")
 
-ggplot(data=summary_stats_SimStudy7,mapping = aes(x=tau,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual,ntraps), scales = "free")
+ggplot(data=SimStudy7,mapping = aes(x=tau,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual,ntraps), scales = "free")
 ggsave("SimStudy7_N_mean_vs_tau.png",device="png")
 
-ggplot(data=summary_stats_SimStudy7,mapping = aes(x=pa_detects,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual,nsites), scales = "free")
+ggplot(data=SimStudy7,mapping = aes(x=pa_detects,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual,nsites), scales = "free")
 ggsave("SimStudy7_N_mean_vs_pa_detects.png",device="png")
 
-ggplot(data=summary_stats_SimStudy7,mapping = aes(x=tau,y=sd_bias)) + geom_point() + facet_wrap(vars(N_actual,ntraps), scales = "free")
+ggplot(data=SimStudy7,mapping = aes(x=tau,y=sd_bias)) + geom_point() + facet_wrap(vars(N_actual,ntraps), scales = "free")
 ggsave("SimStudy7_sd_bias_vs_tau.png",device="png")
 ```
 
-# Third Simulation
+# Fourth Simulation
 
-Parameters for the third simulation (SimStudy8) were as follows:
+Parameters for the fourth simulation (SimStudy8) were as follows:
 
 $N \in (10, 25, 50,75,100,125,150,175,200,500,750,1000)$
 
@@ -163,20 +167,22 @@ ntraps $\in (3,4,5,6)$
 Each simulation (1296 total) was repeated 50 times.
 
 
-```{r fig.height = 10, fig.width = 10}
+```{r fig.height = 10, fig.width = 20}
 
-ggplot(data=summary_stats_SimStudy8,mapping = aes(x=tau,y=credible_proportion)) + geom_point() + facet_wrap(vars(N_actual,ntraps), scales = "free") + geom_hline(yintercept=0.95,lty=2)
+SimStudy8 <- subset(summary_stats_SimStudy8, N_actual == 1000)
+
+ggplot(data=SimStudy8,mapping = aes(x=tau,y=credible_proportion)) + geom_point() + facet_wrap(vars(N_actual,ntraps, nsites), scales = "free") + geom_hline(yintercept=0.95,lty=2)
 ggsave("SimStudy8_credible_proportion_vs_tau.png",device="png")
 
-ggplot(data=summary_stats_SimStudy8,mapping = aes(x=n_captured,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual,ntraps), scales = "free") + geom_abline(slope=1)
+ggplot(data=SimStudy8,mapping = aes(x=n_captured,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual,ntraps, nsites), scales = "free") + geom_abline(slope=1)
 ggsave("SimStudy8_N_mean_vs_n_captured.png",device="png")
 
-ggplot(data=summary_stats_SimStudy8,mapping = aes(x=tau,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual,ntraps), scales = "free")
+ggplot(data=SimStudy8,mapping = aes(x=tau,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual,ntraps, nsites), scales = "free")
 ggsave("SimStudy8_N_mean_vs_tau.png",device="png")
 
-ggplot(data=summary_stats_SimStudy8,mapping = aes(x=pa_detects,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual,nsites), scales = "free")
+ggplot(data=SimStudy8,mapping = aes(x=pa_detects,y=N_mean)) + geom_point() + facet_wrap(vars(N_actual,ntraps, nsites), scales = "free")
 ggsave("SimStudy8_N_mean_vs_pa_detects.png",device="png")
 
-ggplot(data=summary_stats_SimStudy8,mapping = aes(x=tau,y=sd_bias)) + geom_point() + facet_wrap(vars(N_actual,ntraps), scales = "free")
+ggplot(data=SimStudy8,mapping = aes(x=tau,y=sd_bias)) + geom_point() + facet_wrap(vars(N_actual,ntraps, nsites), scales = "free")
 ggsave("SimStudy8_sd_bias_vs_tau.png",device="png")
 ```
