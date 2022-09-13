@@ -50,6 +50,14 @@ ggplot(data = summary_stats_SimStudy4, mapping = aes(x = tau, y = credible_propo
 
 ggsave("SimStudy4_credible_proportion_vs_tau.png", device = "png")
 
+ggplot(data = summary_stats_SimStudy4, mapping = aes(x = n_captured/N_actual, y = credible_proportion)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  geom_hline(yintercept = 0.95, lty = 2) +
+  ggtitle("Credible Proportion vs. Population Proportion Captured - First Simulation")
+
+ggsave("SimStudy4_credible_proportion_vs_pop_prop.png", device = "png")
+
 ggplot(data = summary_stats_SimStudy4, mapping = aes(x = n_captured, y = N_mean)) +
   geom_point() +
   facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
@@ -115,6 +123,14 @@ ggplot(data = SimStudy5, mapping = aes(x = tau, y = credible_proportion)) +
 
 ggsave("SimStudy5_credible_proportion_vs_tau.png", device = "png")
 
+ggplot(data = SimStudy5, mapping = aes(x = n_captured/N_actual, y = credible_proportion)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  geom_hline(yintercept = 0.95, lty = 2) +
+  ggtitle("Credible Proportion vs Population Proportion Captured - Second Simulation")
+
+ggsave("SimStudy5_credible_proportion_vs_pop_prop.png", device = "png")
+
 ggplot(data = SimStudy5, mapping = aes(x = n_captured, y = N_mean)) +
   geom_point() +
   facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
@@ -171,7 +187,7 @@ The simulation study failed at N_actual=200 due to a bug, so will not be include
 
 ```{r fig.height = 10, fig.width = 10, results='hide', message=FALSE, warning=FALSE, echo=FALSE}
 
-SimStudy7 <- subset(summary_stats_SimStudy7, N_actual == 10 | N_actual == 50 | N_actual == 100 | N_actual == 175)
+SimStudy7 <- subset(summary_stats_SimStudy7, N_actual == 10 | N_actual == 175 & (nsites == 16 | nsites == 25))
 
 ggplot(data = SimStudy7, mapping = aes(x = tau, y = credible_proportion)) +
   geom_point() +
@@ -179,6 +195,13 @@ ggplot(data = SimStudy7, mapping = aes(x = tau, y = credible_proportion)) +
   geom_hline(yintercept = 0.95, lty = 2) +
   ggtitle("Credible Proportion vs Tau - Third Simulation")
 ggsave("SimStudy7_credible_proportion_vs_tau.png", device = "png")
+
+ggplot(data = SimStudy7, mapping = aes(x = n_captured/N_actual, y = credible_proportion)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, ntraps), scales = "free", labeller = label_both) +
+  geom_hline(yintercept = 0.95, lty = 2) +
+  ggtitle("Credible Proportion vs Population Proportion Captured - Third Simulation")
+ggsave("SimStudy7_credible_proportion_vs_pop_prop.png", device = "png")
 
 ggplot(data = SimStudy7, mapping = aes(x = n_captured, y = N_mean)) +
   geom_point() +
@@ -201,7 +224,7 @@ ggsave("SimStudy7_N_mean_vs_pa_detects.png", device = "png")
 
 ggplot(data = SimStudy7, mapping = aes(x = tau, y = sd_bias)) +
   geom_point() +
-  facet_wrap(vars(N_actual, ntraps), scales = "free", labeller = label_both) +
+  facet_wrap(vars(N_actual, ntraps,nsites), scales = "free", labeller = label_both) +
   ggtitle("Standard Deviation Bias vs Tau - Third Simulation")
 ggsave("SimStudy7_sd_bias_vs_tau.png", device = "png")
 ```
@@ -225,9 +248,9 @@ ntraps $\in (3,4,5,6)$
 Each simulation (1296 total) was repeated 50 times.
 
 
-```{r fig.height = 10, fig.width = 20, results='hide', message=FALSE, warning=FALSE, echo=FALSE}
+```{r fig.height = 10, fig.width = 10, results='hide', message=FALSE, warning=FALSE, echo=FALSE}
 
-SimStudy8 <- subset(summary_stats_SimStudy8, N_actual == 1000)
+SimStudy8 <- subset(summary_stats_SimStudy8, N_actual == 1000 & (nsites == 16 | nsites == 25))
 
 ggplot(data = SimStudy8, mapping = aes(x = tau, y = credible_proportion)) +
   geom_point() +
@@ -235,6 +258,14 @@ ggplot(data = SimStudy8, mapping = aes(x = tau, y = credible_proportion)) +
   geom_hline(yintercept = 0.95, lty = 2) +
   ggtitle("Credible Proportion vs Tau - Fourth Simulation")
 ggsave("SimStudy8_credible_proportion_vs_tau.png", device = "png")
+
+ggplot(data = SimStudy8, mapping = aes(x = n_captured/N_actual, y = credible_proportion)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
+  geom_hline(yintercept = 0.95, lty = 2) +
+  ggtitle("Credible Proportion vs Population Proportion Captured - Fourth Simulation")
+ggsave("SimStudy8_credible_proportion_vs_pop_prop.png", device = "png")
+
 
 ggplot(data = SimStudy8, mapping = aes(x = n_captured, y = N_mean)) +
   geom_point() +
@@ -257,7 +288,7 @@ ggsave("SimStudy8_N_mean_vs_pa_detects.png", device = "png")
 
 ggplot(data = SimStudy8, mapping = aes(x = tau, y = sd_bias)) +
   geom_point() +
-  facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both, labeller = label_both) +
+  facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
   ggtitle("Standard Deviation Bias vs. Tau - Fourth Simulation")
 ggsave("SimStudy8_sd_bias_vs_tau.png", device = "png")
 ```
