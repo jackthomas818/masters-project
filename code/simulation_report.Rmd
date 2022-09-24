@@ -256,14 +256,14 @@ ggplot(data = SimStudy8, mapping = aes(x = tau, y = credible_proportion)) +
   geom_point() +
   facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
   geom_hline(yintercept = 0.95, lty = 2) +
-  ggtitle("Credible Proportion vs Tau - Fourth Simulation")
+  ggtitle("Credible Proportion vs Tau")
 ggsave("SimStudy8_credible_proportion_vs_tau.png", device = "png")
 
 ggplot(data = SimStudy8, mapping = aes(x = n_captured/N_actual, y = credible_proportion)) +
   geom_point() +
   facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
   geom_hline(yintercept = 0.95, lty = 2) +
-  ggtitle("Credible Proportion vs Population Proportion Captured - Fourth Simulation")
+  ggtitle("Credible Proportion vs Population Proportion Captured")
 ggsave("SimStudy8_credible_proportion_vs_pop_prop.png", device = "png")
 
 
@@ -271,24 +271,24 @@ ggplot(data = SimStudy8, mapping = aes(x = n_captured, y = N_mean)) +
   geom_point() +
   facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
   geom_abline(slope = 1) +
-  ggtitle("N Mean vs. n Captured - Fourth Simulation")
+  ggtitle("N Mean vs. n Captured")
 ggsave("SimStudy8_N_mean_vs_n_captured.png", device = "png")
 
 ggplot(data = SimStudy8, mapping = aes(x = tau, y = N_mean)) +
   geom_point() +
   facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
-  ggtitle("N Mean vs. Tau - Fourth Simulation")
+  ggtitle("N Mean vs. Tau")
 ggsave("SimStudy8_N_mean_vs_tau.png", device = "png")
 
 ggplot(data = SimStudy8, mapping = aes(x = pa_detects, y = N_mean)) +
   geom_point() +
   facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
-  ggtitle("N Mean vs. Presence-Absence Detections - Fourth Simulation")
+  ggtitle("N Mean vs. Presence-Absence Detections")
 ggsave("SimStudy8_N_mean_vs_pa_detects.png", device = "png")
 
 ggplot(data = SimStudy8, mapping = aes(x = tau, y = sd_bias)) +
   geom_point() +
   facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
-  ggtitle("Standard Deviation Bias vs. Tau - Fourth Simulation")
+  ggtitle("Standard Deviation Bias vs. Tau")
 ggsave("SimStudy8_sd_bias_vs_tau.png", device = "png")
 ```
