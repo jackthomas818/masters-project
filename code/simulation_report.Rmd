@@ -1,0 +1,294 @@
+---
+title: "Simulation Report"
+author: "Jack Thomas"
+date: '2022-08-30'
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(results = "hide")
+library(ggplot2)
+library(readr)
+summary_stats_SimStudy4 <- read_csv("summary_stats_SimStudy4.csv")
+summary_stats_SimStudy5 <- read_csv("summary_stats_SimStudy5.csv")
+summary_stats_SimStudy7 <- read_csv("summary_stats_SimStudy7.csv")
+summary_stats_SimStudy8 <- read_csv("summary_stats_SimStudy8.csv")
+```
+
+# Simulation Study Report
+
+The simulations that will be reported are simulations 4,5, 7,8.
+
+# First Simulation
+
+Parameters for the first simulation (SimStudy4) were as follows:
+
+$N \in (10,25,50)$
+
+$\tau \in (0.25,0.35,0.45,0.55,0.65)$
+
+nsites $=16$
+
+nsample_cap $=5$
+
+nsample_pa $=7$
+
+ntraps $=3$
+
+Each simulation (15 total) was repeated 50 times.
+
+```{r fig.height = 2, fig.width = 10, results='hide', message=FALSE, warning=FALSE, echo=FALSE}
+
+ggplot(data = summary_stats_SimStudy4, mapping = aes(x = tau, y = credible_proportion)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  geom_hline(yintercept = 0.95, lty = 2) +
+  ggtitle("Credible Proportion vs. Tau - First Simulation")
+
+ggsave("SimStudy4_credible_proportion_vs_tau.png", device = "png")
+
+ggplot(data = summary_stats_SimStudy4, mapping = aes(x = n_captured/N_actual, y = credible_proportion)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  geom_hline(yintercept = 0.95, lty = 2) +
+  ggtitle("Credible Proportion vs. Population Proportion Captured - First Simulation")
+
+ggsave("SimStudy4_credible_proportion_vs_pop_prop.png", device = "png")
+
+ggplot(data = summary_stats_SimStudy4, mapping = aes(x = n_captured, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  geom_abline(slope = 1) +
+  ggtitle("N Mean vs n Captured - First Simulation")
+
+ggsave("SimStudy4_N_mean_vs_n_captured.png", device = "png")
+
+ggplot(data = summary_stats_SimStudy4, mapping = aes(x = tau, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  ggtitle("N Mean vs Tau - First Simulation")
+ggsave("SimStudy4_N_mean_vs_tau.png", device = "png")
+
+ggplot(data = summary_stats_SimStudy4, mapping = aes(x = tau, y = N_bias)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  ggtitle("N Bias vs Tau - First Simulation")
+ggsave("SimStudy4_N_bias_vs_tau.png", device = "png")
+
+ggplot(data = summary_stats_SimStudy4, mapping = aes(x = pa_detects, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  ggtitle("N Mean vs Presence-Absence Detections - First Simulation")
+ggsave("SimStudy4_N_mean_vs_pa_detects.png", device = "png")
+
+ggplot(data = summary_stats_SimStudy4, mapping = aes(x = tau, y = sd_bias)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  ggtitle("Standard Deviation Bias vs Tau - First Simulation")
+ggsave("SimStudy4_sd_bias_vs_tau.png", device = "png")
+```
+
+# Second Simulation
+
+Parameters for the second simulation (SimStudy5) were as follows:
+
+$N \in (10, 25, 50,75,100,125,150,175,200)$
+
+$\tau \in (0.15,0.20,0.25,0.30,0.35,0.4,0.45,0.5,0.55)$
+
+nsites $=16$
+
+nsample_cap $=5$
+
+nsample_pa $=7$
+
+ntraps $=3$
+
+Each simulation (81 total) was repeated 100 times.
+
+
+
+```{r fig.height = 10, fig.width = 10, results='hide', message=FALSE, warning=FALSE, echo=FALSE}
+
+SimStudy5 <- subset(summary_stats_SimStudy5, N_actual == 10 | N_actual == 50 | N_actual == 100 | N_actual == 175)
+
+ggplot(data = SimStudy5, mapping = aes(x = tau, y = credible_proportion)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  geom_hline(yintercept = 0.95, lty = 2) +
+  ggtitle("Credible Proportion vs Tau - Second Simulation")
+
+ggsave("SimStudy5_credible_proportion_vs_tau.png", device = "png")
+
+ggplot(data = SimStudy5, mapping = aes(x = n_captured/N_actual, y = credible_proportion)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  geom_hline(yintercept = 0.95, lty = 2) +
+  ggtitle("Credible Proportion vs Population Proportion Captured - Second Simulation")
+
+ggsave("SimStudy5_credible_proportion_vs_pop_prop.png", device = "png")
+
+ggplot(data = SimStudy5, mapping = aes(x = n_captured, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  geom_abline(slope = 1) +
+  ggtitle("N Mean vs n Captured - Second Simulation")
+
+ggsave("SimStudy5_N_mean_vs_n_captured.png", device = "png")
+
+ggplot(data = SimStudy5, mapping = aes(x = tau, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  ggtitle("N Mean vs Tau - Second Simulation")
+ggsave("SimStudy5_N_mean_vs_tau.png", device = "png")
+
+ggplot(data = SimStudy5, mapping = aes(x = tau, y = N_bias)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  ggtitle("N Bias vs Tau - Second Simulation")
+ggsave("SimStudy5_N_bias_vs_tau.png", device = "png")
+
+ggplot(data = SimStudy5, mapping = aes(x = pa_detects, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  ggtitle("N Mean vs Presence-Absence Detections - Second Simulation")
+ggsave("SimStudy5_N_mean_vs_pa_detects.png", device = "png")
+
+ggplot(data = SimStudy5, mapping = aes(x = tau, y = sd_bias)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  ggtitle("Standard Deviation Bias vs Tau - Second Simulation")
+ggsave("SimStudy5_sd_bias_vs_tau.png", device = "png")
+```
+
+# Third Simulation
+
+Parameters for the third simulation (SimStudy7) were as follows:
+
+$N \in (10, 25, 50,75,100,125,150,175,200)$
+
+$\tau \in (0.15,0.20,0.25,0.30,0.35,0.4,0.45,0.5,0.55)$
+
+nsites $\in (16,25,36)$
+
+nsample_cap $=7$
+
+nsample_pa $=5$
+
+ntraps $\in (3,4,5)$
+
+Each simulation (729 total) was repeated 50 times.
+
+The simulation study failed at N_actual=200 due to a bug, so will not be included.
+
+
+```{r fig.height = 10, fig.width = 10, results='hide', message=FALSE, warning=FALSE, echo=FALSE}
+
+SimStudy7 <- subset(summary_stats_SimStudy7, N_actual == 10 | N_actual == 175 & (nsites == 16 | nsites == 25))
+
+ggplot(data = SimStudy7, mapping = aes(x = tau, y = credible_proportion)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, ntraps), scales = "free", labeller = label_both) +
+  geom_hline(yintercept = 0.95, lty = 2) +
+  ggtitle("Credible Proportion vs Tau - Third Simulation")
+ggsave("SimStudy7_credible_proportion_vs_tau.png", device = "png")
+
+ggplot(data = SimStudy7, mapping = aes(x = n_captured/N_actual, y = credible_proportion)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, ntraps), scales = "free", labeller = label_both) +
+  geom_hline(yintercept = 0.95, lty = 2) +
+  ggtitle("Credible Proportion vs Population Proportion Captured - Third Simulation")
+ggsave("SimStudy7_credible_proportion_vs_pop_prop.png", device = "png")
+
+ggplot(data = SimStudy7, mapping = aes(x = n_captured, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, ntraps), scales = "free", labeller = label_both) +
+  geom_abline(slope = 1) +
+  ggtitle("N Mean vs n Captured - Third Simulation")
+ggsave("SimStudy7_N_mean_vs_n_captured.png", device = "png")
+
+ggplot(data = SimStudy7, mapping = aes(x = tau, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, ntraps), scales = "free", labeller = label_both) +
+  ggtitle("N Mean vs Tau - Third Simulation")
+ggsave("SimStudy7_N_mean_vs_tau.png", device = "png")
+
+ggplot(data = SimStudy7, mapping = aes(x = pa_detects, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, nsites), scales = "free", labeller = label_both) +
+  ggtitle("N Mean vs Presence-Absence Detections - Third Simulation")
+ggsave("SimStudy7_N_mean_vs_pa_detects.png", device = "png")
+
+ggplot(data = SimStudy7, mapping = aes(x = tau, y = sd_bias)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, ntraps,nsites), scales = "free", labeller = label_both) +
+  ggtitle("Standard Deviation Bias vs Tau - Third Simulation")
+ggsave("SimStudy7_sd_bias_vs_tau.png", device = "png")
+```
+
+# Fourth Simulation
+
+Parameters for the fourth simulation (SimStudy8) were as follows:
+
+$N \in (10, 25, 50,75,100,125,150,175,200,500,750,1000)$
+
+$\tau \in (0.15,0.20,0.25,0.30,0.35,0.4,0.45,0.5,0.55)$
+
+nsites $\in (16,25,36)$
+
+nsample_cap $=7$
+
+nsample_pa $=5$
+
+ntraps $\in (3,4,5,6)$
+
+Each simulation (1296 total) was repeated 50 times.
+
+
+```{r fig.height = 10, fig.width = 10, results='hide', message=FALSE, warning=FALSE, echo=FALSE}
+
+SimStudy8 <- subset(summary_stats_SimStudy8, N_actual == 1000 & (nsites == 16 | nsites == 25))
+
+ggplot(data = SimStudy8, mapping = aes(x = tau, y = credible_proportion)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
+  geom_hline(yintercept = 0.95, lty = 2) +
+  ggtitle("Credible Proportion vs Tau")
+ggsave("SimStudy8_credible_proportion_vs_tau.png", device = "png")
+
+ggplot(data = SimStudy8, mapping = aes(x = n_captured/N_actual, y = credible_proportion)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
+  geom_hline(yintercept = 0.95, lty = 2) +
+  ggtitle("Credible Proportion vs Population Proportion Captured")
+ggsave("SimStudy8_credible_proportion_vs_pop_prop.png", device = "png")
+
+
+ggplot(data = SimStudy8, mapping = aes(x = n_captured, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
+  geom_abline(slope = 1) +
+  ggtitle("N Mean vs. n Captured")
+ggsave("SimStudy8_N_mean_vs_n_captured.png", device = "png")
+
+ggplot(data = SimStudy8, mapping = aes(x = tau, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
+  ggtitle("N Mean vs. Tau")
+ggsave("SimStudy8_N_mean_vs_tau.png", device = "png")
+
+ggplot(data = SimStudy8, mapping = aes(x = pa_detects, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
+  ggtitle("N Mean vs. Presence-Absence Detections")
+ggsave("SimStudy8_N_mean_vs_pa_detects.png", device = "png")
+
+ggplot(data = SimStudy8, mapping = aes(x = tau, y = sd_bias)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
+  ggtitle("Standard Deviation Bias vs. Tau")
+ggsave("SimStudy8_sd_bias_vs_tau.png", device = "png")
+```
