@@ -16,6 +16,7 @@ summary_stats_SimStudy4 <- read_csv("summary_stats_SimStudy4.csv")
 summary_stats_SimStudy5 <- read_csv("summary_stats_SimStudy5.csv")
 summary_stats_SimStudy7 <- read_csv("summary_stats_SimStudy7.csv")
 summary_stats_SimStudy8 <- read_csv("summary_stats_SimStudy8.csv")
+summary_stats_SimStudy10 <- read_csv("summary_stats_simStudy10.csv")
 ```
 
 # Simulation Study Report
@@ -291,4 +292,53 @@ ggplot(data = SimStudy8, mapping = aes(x = tau, y = sd_bias)) +
   facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
   ggtitle("Standard Deviation Bias vs. Tau")
 ggsave("SimStudy8_sd_bias_vs_tau.png", device = "png")
+```
+
+
+
+```{r fig.height = 10, fig.width = 10, results='hide', message=FALSE, warning=FALSE, echo=FALSE}
+
+SimStudy10 <- subset(summary_stats_SimStudy10,nsites == 81)
+
+ggplot(data = SimStudy10, mapping = aes(x = tau, y = credible_proportion)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
+  geom_hline(yintercept = 0.95, lty = 2) +
+  ggtitle("Credible Proportion vs Tau")
+ggsave("SimStudy10_credible_proportion_vs_tau.png", device = "png")
+
+ggplot(data = SimStudy10, mapping = aes(x = n_captured/N_actual, y = credible_proportion)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
+  geom_hline(yintercept = 0.95, lty = 2) +
+  ggtitle("Credible Proportion vs Population Proportion Captured")
+ggsave("SimStudy10_credible_proportion_vs_pop_prop.png", device = "png")
+
+
+ggplot(data = SimStudy10, mapping = aes(x = n_captured, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
+  geom_abline(slope = 1) +
+  ggtitle("N Mean vs. n Captured")
+ggsave("SimStudy10_N_mean_vs_n_captured.png", device = "png")
+
+ggplot(data = SimStudy10, mapping = aes(x = tau, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
+  ggtitle("N Mean vs. Tau")
+ggsave("SimStudy10_N_mean_vs_tau.png", device = "png")
+
+ggplot(data = SimStudy10, mapping = aes(x = pa_detects, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, nsample_cap,tau), scales = "free", labeller = label_both) +
+  ggtitle("N Mean vs. Presence-Absence Detections")
+ggsave("SimStudy10_N_mean_vs_pa_detects.png", device = "png")
+
+ggplot(data = SimStudy10, mapping = aes(x = tau, y = sd_bias)) +
+  geom_point() +
+  facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
+  ggtitle("Standard Deviation Bias vs. Tau")
+ggsave("SimStudy10_sd_bias_vs_tau.png", device = "png")
+
+
 ```
