@@ -28,6 +28,9 @@ tic()
 
 print("finished loading libraries")
 
+# directory where all data folders are
+setwd("D:/Data")
+
 # get command line arguments
 args <- commandArgs(trailingOnly = TRUE)
 
@@ -38,8 +41,8 @@ directory <- args[1]
 reps <- strtoi(args[2])
 
 
-# directory <- "SimStudy9"
-# reps <- 20
+#directory <- "SimStudy9"
+#reps <- 20
 
 # parameter matrix from generate_parameter_matrix.R
 params_matrix <- read.csv(paste0(directory, "/parameter_matrix.csv"))
@@ -58,6 +61,8 @@ tau <- array(data = NA, dim = nrow(params_matrix) * reps)
 nsites <- array(data = NA, dim = nrow(params_matrix) * reps)
 ntraps <- array(data = NA, dim = nrow(params_matrix) * reps)
 N_actual <- array(data = NA, dim = nrow(params_matrix) * reps)
+nsample_cap <- array(data = NA, dim = nrow(params_matrix) * reps)
+nsample_pa <- array(data = NA, dim = nrow(params_matrix) * reps)
 seed <- array(data = NA, dim = nrow(params_matrix) * reps)
 
 # parameter for older simulations that use old format
@@ -113,11 +118,11 @@ for (task_id in 1:nrow(params_matrix)) {
     N_upper_95[count] <- unlist(model_data["X97.5."])[1]
     N_sd[count] <- unlist(model_data["SD"])[1]
     N_naive_se[count] <- unlist(model_data["Naive.SE"])[1]
-    
-    if(!old){
-      seed[count] <- unlist(model_data["seed"])[1]  
+
+    if (!old) {
+      seed[count] <- unlist(model_data["seed"])[1]
     }
-    
+
 
     if (is.null(cr_data)) {
       n_captured[count] <- 0
@@ -130,6 +135,8 @@ for (task_id in 1:nrow(params_matrix)) {
     nsites[count] <- unlist(params_matrix["nsites"])[task_id]
     ntraps[count] <- unlist(params_matrix["ntraps"])[task_id]
     N_actual[count] <- unlist(params_matrix["N"])[task_id]
+    nsample_pa[count] <- unlist(params_matrix["nsample_pa"])[task_id]
+    nsample_cap[count] <- unlist(params_matrix["nsample_cap"])[task_id]
 
     count <- count + 1
   }
@@ -140,7 +147,9 @@ cred_contains_actual_N <- array(cred_prop(N_lower_95, N_upper_95, N_actual))
 # calculate bias
 N_bias <- array((N_mean - N_actual) / N_actual)
 
-all_data <- data.frame(cbind(sim, N_actual, N_mean, N_bias, n_captured, tau, nsites, ntraps, pa_detects_total, N_lower_95, N_upper_95, cred_contains_actual_N, N_sd, N_naive_se, seed))
+all_data <- data.frame(cbind(sim, N_actual, N_mean, N_bias, n_captured, tau, nsites, ntraps,
+                             pa_detects_total, N_lower_95, N_upper_95, cred_contains_actual_N,
+                             N_sd, N_naive_se, nsample_pa, nsample_cap, seed))
 # all_data <- read.csv("all_data_SimStudy8.csv")
 
 
@@ -161,6 +170,8 @@ summary_stats <- all_data[, list(
   N_bias = mean(N_bias),
   N_sd = mean(N_sd),
   sd_bias = (mean(N_sd) - sd(N_mean)) / sd(N_mean),
+  nsample_pa = mean(nsample_pa),
+  nsample_cap = mean(nsample_cap),
   N_naive_se = mean(N_naive_se),
   credible_proportion = sum(cred_contains_actual_N, na.rm = TRUE) / reps
 ), by = sim]
