@@ -294,6 +294,21 @@ ggplot(data = SimStudy8, mapping = aes(x = tau, y = sd_bias)) +
 ggsave("SimStudy8_sd_bias_vs_tau.png", device = "png")
 ```
 
+# Fifth Simulation
+
+Simulation 10 varied:
+
+  $N \in (10,100,200)$
+  
+  $\tau \in (0.15,0.30,0.55)$
+  
+  nsites $\in (49,64,81)$
+  
+  nsample_cap $\in (8,10,12,14$
+  
+  nsample_pa $\in (8,10,12,14)$
+  
+  ntraps $\in (3,4,5,6)$
 
 
 ```{r fig.height = 10, fig.width = 10, results='hide', message=FALSE, warning=FALSE, echo=FALSE}
