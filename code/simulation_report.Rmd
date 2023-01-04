@@ -251,7 +251,7 @@ Each simulation (1296 total) was repeated 50 times.
 
 ```{r fig.height = 10, fig.width = 10, results='hide', message=FALSE, warning=FALSE, echo=FALSE}
 
-SimStudy8 <- subset(summary_stats_SimStudy8, (N_actual >= 75 & N_actual <= 200) & nsites == 25 & ntraps == 3)
+SimStudy8 <- subset(summary_stats_SimStudy8, (N_actual >= 75 & N_actual <= 200) & nsites == 25 & ntraps == 5)
 
 ggplot(data = SimStudy8, mapping = aes(x = tau, y = credible_proportion)) +
   geom_point() +
@@ -261,28 +261,37 @@ ggplot(data = SimStudy8, mapping = aes(x = tau, y = credible_proportion)) +
   theme(plot.margin = margin(10, 10, 10, 10)) +
   xlab("Tau") +
   ylab("Credible Proportion")
-ggsave("SimStudy8_credible_proportion_vs_tau.png", device = "png")
+ggsave("SimStudy8_credible_proportion_vs_tau.png", device = "png", dpi = 300)
 
 ggplot(data = SimStudy8, mapping = aes(x = n_captured / N_actual, y = credible_proportion)) +
   geom_point() +
   facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
   geom_hline(yintercept = 0.95, lty = 2) +
-  ggtitle("Credible Proportion vs Population Proportion Captured")
-ggsave("SimStudy8_credible_proportion_vs_pop_prop.png", device = "png")
+  ggtitle("Credible Proportion vs Population Proportion Captured") +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab("Population Proportion Captured") +
+  ylab("Credible Proportion")
+ggsave("SimStudy8_credible_proportion_vs_pop_prop.png", device = "png", dpi = 300)
 
 
 ggplot(data = SimStudy8, mapping = aes(x = n_captured, y = N_mean)) +
   geom_point() +
   facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
   geom_abline(slope = 1) +
-  ggtitle("N Mean vs. n Captured")
-ggsave("SimStudy8_N_mean_vs_n_captured.png", device = "png")
+  ggtitle("Population Estimate vs. Number Captured") +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab("Number Captured") +
+  ylab("Population Estimate")
+ggsave("SimStudy8_N_mean_vs_n_captured.png", device = "png", dpi = 300)
 
 ggplot(data = SimStudy8, mapping = aes(x = tau, y = N_mean)) +
   geom_point() +
   facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
-  ggtitle("N Mean vs. Tau")
-ggsave("SimStudy8_N_mean_vs_tau.png", device = "png")
+  ggtitle("Population Estimate vs. Tau") +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab("Tau") +
+  ylab("Population Estimate")
+ggsave("SimStudy8_N_mean_vs_tau.png", device = "png", dpi = 300)
 
 
 SimStudy8_pa <- subset(summary_stats_SimStudy8, (N_actual >= 75 & N_actual <= 200) & (nsites == 25) & ntraps == 3)
@@ -298,13 +307,21 @@ ggsave("SimStudy8_N_mean_vs_pa_detects.png", device = "png", dpi = 300)
 ggplot(data = SimStudy8_pa, mapping = aes(x = n_captured, y = pa_detects)) +
   geom_point() +
   facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
-  ggtitle("n captured vs. Presence-Absence Detections")
+  ggtitle("Number Captured vs. Presence-Absence Detections") +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab("Presence-Absence Detections") +
+  ylab("Number Captured")
+ggsave("SimStudy8_pa_detections_vs_n_captured.png", device = "png", dpi = 300)
+
 
 ggplot(data = SimStudy8, mapping = aes(x = tau, y = sd_bias)) +
   geom_point() +
   facet_wrap(vars(N_actual, ntraps, nsites), scales = "free", labeller = label_both) +
-  ggtitle("Standard Deviation Bias vs. Tau")
-ggsave("SimStudy8_sd_bias_vs_tau.png", device = "png")
+  ggtitle("Standard Deviation Bias vs. Tau") +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab("Tau") +
+  ylab("Standard Deviation Bias")
+ggsave("SimStudy8_sd_bias_vs_tau.png", device = "png", dpi = 300)
 ```
 
 # Fifth Simulation
@@ -333,14 +350,14 @@ ggplot(data = SimStudy10, mapping = aes(x = tau, y = credible_proportion)) +
   facet_wrap(vars(N_actual, ntraps, nsample_cap), scales = "free", labeller = label_both) +
   geom_hline(yintercept = 0.95, lty = 2) +
   ggtitle("Credible Proportion vs Tau")
-ggsave("SimStudy10_credible_proportion_vs_tau.png", device = "png", height = 100, limitsize = F)
+ggsave("SimStudy10_credible_proportion_vs_tau.png", device = "png", height = 100, limitsize = F, dpi = 300)
 
 ggplot(data = SimStudy10, mapping = aes(x = n_captured / N_actual, y = credible_proportion)) +
   geom_point() +
   facet_wrap(vars(N_actual, ntraps, nsample_cap), scales = "free", labeller = label_both) +
   geom_hline(yintercept = 0.95, lty = 2) +
   ggtitle("Credible Proportion vs Population Proportion Captured")
-ggsave("SimStudy10_credible_proportion_vs_pop_prop.png", device = "png")
+ggsave("SimStudy10_credible_proportion_vs_pop_prop.png", device = "png", dpi = 300)
 
 
 ggplot(data = SimStudy10, mapping = aes(x = n_captured, y = N_mean)) +
@@ -348,23 +365,23 @@ ggplot(data = SimStudy10, mapping = aes(x = n_captured, y = N_mean)) +
   facet_wrap(vars(N_actual, ntraps, nsample_cap), scales = "free", labeller = label_both) +
   geom_abline(slope = 1) +
   ggtitle("N Mean vs. n Captured")
-ggsave("SimStudy10_N_mean_vs_n_captured.png", device = "png")
+ggsave("SimStudy10_N_mean_vs_n_captured.png", device = "png", dpi = 300)
 
 ggplot(data = SimStudy10, mapping = aes(x = tau, y = N_mean)) +
   geom_point() +
   facet_wrap(vars(N_actual, ntraps, nsample_cap), scales = "free", labeller = label_both) +
   ggtitle("N Mean vs. Tau")
-ggsave("SimStudy10_N_mean_vs_tau.png", device = "png")
+ggsave("SimStudy10_N_mean_vs_tau.png", device = "png", dpi = 300)
 
 ggplot(data = SimStudy10, mapping = aes(x = pa_detects, y = N_mean)) +
   geom_point() +
   facet_wrap(vars(tau, nsites, nsample_pa), scales = "free", labeller = label_both) +
   ggtitle("N Mean vs. Presence-Absence Detections")
-ggsave("SimStudy10_N_mean_vs_pa_detects.png", device = "png")
+ggsave("SimStudy10_N_mean_vs_pa_detects.png", device = "png", dpi = 300)
 
 ggplot(data = SimStudy10, mapping = aes(x = tau, y = sd_bias)) +
   geom_point() +
   facet_wrap(vars(ntraps, nsample_pa, nsample_cap), scales = "free", labeller = label_both) +
   ggtitle("Standard Deviation Bias vs. Tau")
-ggsave("SimStudy10_sd_bias_vs_tau.png", device = "png")
+ggsave("SimStudy10_sd_bias_vs_tau.png", device = "png", dpi = 300)
 ```
