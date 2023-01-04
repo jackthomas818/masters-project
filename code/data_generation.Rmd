@@ -15,13 +15,14 @@ Data generation for Blanc et al. model.
 # Simulate Individuals
 
 ```{r individuals}
-set.seed(1313)
+set.seed(512)
 
-n <- 10
+n <- 5
 homeranges <- create_homeranges(n)
 # plotting homeranges for validation
 par(pty = "s")
-plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
+plot(homeranges, xlim = c(0, 1), ylim = c(0, 1), main = "Home Ranges for Individuals")
+
 text(homeranges, labels = rownames(homeranges), cex = 1.5, font = 2, pos = 3)
 ```
 
@@ -39,9 +40,10 @@ traps <- define_traps(ntraps)
 # plot traps on study area with homeranges included
 par(pty = "s", mar = c(5, 4, 4, 8), xpd = TRUE)
 
-plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
+plot(homeranges, xlim = c(0, 1), ylim = c(0, 1), main = "Home-Ranges with Camera Traps Placed")
 points(traps, col = "red", pch = 15)
-legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, col = c("black", "red"), pch = c(1, 15))
+text(homeranges, labels = rownames(homeranges), cex = 1.5, font = 2, pos = 3)
+legend("topright", inset = c(-.5, 0), c("home-range", "camera trap"), cex = .8, col = c("black", "red"), pch = c(1, 15))
 ```
 
 ## Trap detection probabilities
@@ -49,7 +51,7 @@ legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, c
 We calculate the detection probabilities of each individual for each trap.
 
 ```{r CR-trap-detection-prob}
-tau <- 0.3
+tau <- 0.05
 trap_detec <- calc_detection(ntraps, homeranges, traps, tau)
 
 # plot individuals and their camera trap detection probabilities
@@ -57,7 +59,7 @@ trap_detec <- calc_detection(ntraps, homeranges, traps, tau)
 
 for (j in 1:ntraps) {
   par(pty = "s", mar = c(5, 4, 4, 8), xpd = TRUE)
-  plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
+  plot(homeranges, xlim = c(0, 1), ylim = c(0, 1), main = paste0("Capture Probabilities by Trap ", j))
   points(x = traps[j, 1], y = traps[j, 2], col = "red", pch = 15)
   text(x = traps[j, 1], y = traps[j, 2], labels = paste(c("Trap", j), collapse = " "), cex = 1.5, font = 2, pos = 3)
   text(homeranges, labels = round(trap_detec[, j], 2), cex = 1, font = 2, pos = 3)
@@ -110,14 +112,15 @@ text(homeranges, labels = rownames(homeranges), cex = 1.5, font = 2, pos = 3)
 
 ```{r plots}
 library(gplots)
-
+set.seed(1235)
 nsample_pa <- 7
 presence_absence <- sim_presence_absence(nsites, nsample_pa, homeranges, regions, tau)
+par(pty = "s")
 gen_heatmap(presence_absence, nsites)
 
 # plot grid cells on study area with homerange centers and individuals labeled
 par(pty = "s")
-plot(homeranges, xlim = c(0, 1), ylim = c(0, 1))
+plot(homeranges, xlim = c(0, 1), ylim = c(0, 1), main = "Gridded Study Area")
 for (i in 0:m) {
   abline(v = i / m)
   abline(h = i / m)
@@ -144,7 +147,7 @@ nsample_cap <- 5
 nsample_pa <- 7
 
 # amount of movement for the species
-tau <- 0.3
+tau <- 0.25
 
 # number of camera traps
 ntraps <- 3

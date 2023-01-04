@@ -393,7 +393,7 @@ sim_presence_absence <- function(nsites, nsample_pa, homeranges, regions, tau) {
   }
   # columns do not necessarily sum to 1, because individual may spend
   # time outside the study area
-  # colSums(indi_props)
+  print(indi_props)
   return(presence_absence)
 }
 
@@ -431,7 +431,7 @@ gen_heatmap <- function(presence_absence, nsites) {
 
   col_pallette <- colorRampPalette(c("grey", "yellow", "orange", "red"))
 
-  heatmap.2(d_sums_mat, Rowv = FALSE, Colv = FALSE, dendrogram = "none", col = col_pallette, tracecol = NA, labRow = NA, labCol = NA, margins = c(.1, .1))
+  heatmap.2(d_sums_mat, Rowv = FALSE, Colv = FALSE, dendrogram = "none", col = col_pallette, tracecol = NA, labRow = NA, labCol = NA, margins = c(.1, .1), main = "Heatmap of detections")
 }
 
 
@@ -509,7 +509,7 @@ output_data <- function(presence_absence, capture_hist, id) {
   # data structure: rows = sites; columns = occasions
 
   # .csv format
-  write.table(presence_absence, file = paste0("./presence-absence-data-",id,".csv"), col.names = FALSE, sep = ",", row.names = FALSE)
+  write.table(presence_absence, file = paste0("./presence-absence-data-", id, ".csv"), col.names = FALSE, sep = ",", row.names = FALSE)
 
   # Capture-recapture
   # data structure: rows = individuals; columns = capture occasions
@@ -519,7 +519,7 @@ output_data <- function(presence_absence, capture_hist, id) {
   capture_hist <- capture_hist[rowSums(capture_hist == 0, na.rm = TRUE) < ncol(capture_hist), ]
 
   # .txt format
-  write.table(capture_hist, file = paste0("./capture-recapture-data-",id,".txt"), col.names = FALSE, sep = " ", row.names = FALSE)
+  write.table(capture_hist, file = paste0("./capture-recapture-data-", id, ".txt"), col.names = FALSE, sep = " ", row.names = FALSE)
 
-  return(paste0("Done outputting data: capture-recapture-data-",id,".txt and presence-absence-data-",id,".csv"))
+  return(paste0("Done outputting data: capture-recapture-data-", id, ".txt and presence-absence-data-", id, ".csv"))
 }
