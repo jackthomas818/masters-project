@@ -41,8 +41,8 @@ directory <- args[1]
 reps <- strtoi(args[2])
 
 
-#directory <- "SimStudy9"
-#reps <- 20
+# directory <- "SimStudy9"
+# reps <- 20
 
 # parameter matrix from generate_parameter_matrix.R
 params_matrix <- read.csv(paste0(directory, "/parameter_matrix.csv"))
@@ -63,6 +63,11 @@ ntraps <- array(data = NA, dim = nrow(params_matrix) * reps)
 N_actual <- array(data = NA, dim = nrow(params_matrix) * reps)
 nsample_cap <- array(data = NA, dim = nrow(params_matrix) * reps)
 nsample_pa <- array(data = NA, dim = nrow(params_matrix) * reps)
+psi0_mean <- array(data = NA, dim = nrow(params_matrix) * reps)
+psi0_lower_95 <- array(data = NA, dim = nrow(params_matrix) * reps)
+psi0_upper_95 <- array(data = NA, dim = nrow(params_matrix) * reps)
+psi0_sd <- array(data = NA, dim = nrow(params_matrix) * reps)
+psi0_naive_se <- array(data = NA, dim = nrow(params_matrix) * reps)
 seed <- array(data = NA, dim = nrow(params_matrix) * reps)
 
 # parameter for older simulations that use old format
@@ -119,6 +124,13 @@ for (task_id in 1:nrow(params_matrix)) {
     N_sd[count] <- unlist(model_data["SD"])[1]
     N_naive_se[count] <- unlist(model_data["Naive.SE"])[1]
 
+    psi0_mean[count] <- head(tail(unlist(model_data["Mean"]), n = 2), n = 1)
+    psi0_lower_95[count] <- head(tail(unlist(model_data["X2.5."]), n = 2), n = 1)
+    psi0_upper_95[count] <- head(tail(unlist(model_data["X97.5."]), n = 2), n = 1)
+    psi0_sd[count] <- head(tail(unlist(model_data["SD"]), n = 2), n = 1)
+    psi0_naive_se[count] <- head(tail(unlist(model_data["Naive.SE"]), n = 2), n = 1)
+
+
     if (!old) {
       seed[count] <- unlist(model_data["seed"])[1]
     }
@@ -147,9 +159,12 @@ cred_contains_actual_N <- array(cred_prop(N_lower_95, N_upper_95, N_actual))
 # calculate bias
 N_bias <- array((N_mean - N_actual) / N_actual)
 
-all_data <- data.frame(cbind(sim, N_actual, N_mean, N_bias, n_captured, tau, nsites, ntraps,
-                             pa_detects_total, N_lower_95, N_upper_95, cred_contains_actual_N,
-                             N_sd, N_naive_se, nsample_pa, nsample_cap, seed))
+all_data <- data.frame(cbind(
+  sim, N_actual, N_mean, N_bias, n_captured, tau, nsites, ntraps,
+  pa_detects_total, N_lower_95, N_upper_95, cred_contains_actual_N,
+  N_sd, N_naive_se, nsample_pa, nsample_cap, psi0_mean, psi0_lower_95,
+  psi0_upper_95, psi0_sd, psi0_naive_se, seed
+))
 # all_data <- read.csv("all_data_SimStudy8.csv")
 
 
@@ -173,7 +188,9 @@ summary_stats <- all_data[, list(
   nsample_pa = mean(nsample_pa),
   nsample_cap = mean(nsample_cap),
   N_naive_se = mean(N_naive_se),
-  credible_proportion = sum(cred_contains_actual_N, na.rm = TRUE) / reps
+  credible_proportion = sum(cred_contains_actual_N, na.rm = TRUE) / reps,
+  psi0_mean = mean(psi0_mean),
+  psi0_sd = mean(psi0_sd)
 ), by = sim]
 
 # Output summary statistics and all_data
