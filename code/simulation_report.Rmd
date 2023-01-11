@@ -251,11 +251,13 @@ Each simulation (1296 total) was repeated 50 times.
 
 ```{r fig.height = 10, fig.width = 10, results='hide', message=FALSE, warning=FALSE, echo=FALSE}
 
+pop_labeller <- function(x) paste0("Actual Population: ", x)
+
 SimStudy8 <- subset(summary_stats_SimStudy8, (N_actual >= 75 & N_actual <= 200) & nsites == 25 & ntraps == 5)
 
 ggplot(data = SimStudy8, mapping = aes(x = tau, y = credible_proportion)) +
   geom_point() +
-  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
   geom_hline(yintercept = 0.95, lty = 2) +
   ggtitle("Credible Proportion vs Tau") +
   theme(plot.margin = margin(10, 10, 10, 10)) +
@@ -265,7 +267,7 @@ ggsave("SimStudy8_credible_proportion_vs_tau.png", device = "png", dpi = 300)
 
 ggplot(data = SimStudy8, mapping = aes(x = n_captured / N_actual, y = credible_proportion)) +
   geom_point() +
-  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
   geom_hline(yintercept = 0.95, lty = 2) +
   ggtitle("Credible Proportion vs Population Proportion Captured") +
   theme(plot.margin = margin(10, 10, 10, 10)) +
@@ -276,7 +278,7 @@ ggsave("SimStudy8_credible_proportion_vs_pop_prop.png", device = "png", dpi = 30
 
 ggplot(data = SimStudy8, mapping = aes(x = tau, y = credible_width)) +
   geom_point() +
-  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
   ggtitle("Credible Interval Width vs. Tau") +
   theme(plot.margin = margin(10, 10, 10, 10)) +
   xlab("Tau") +
@@ -287,7 +289,7 @@ ggsave("SimStudy8_cred_width_vs_tau.png", device = "png", dpi = 300)
 
 ggplot(data = SimStudy8, mapping = aes(x = n_captured, y = N_mean)) +
   geom_point() +
-  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
   geom_abline(slope = 1) +
   ggtitle("Population Estimate vs. Number Captured") +
   theme(plot.margin = margin(10, 10, 10, 10)) +
@@ -295,9 +297,11 @@ ggplot(data = SimStudy8, mapping = aes(x = n_captured, y = N_mean)) +
   ylab("Population Estimate")
 ggsave("SimStudy8_N_mean_vs_n_captured.png", device = "png", dpi = 300)
 
+cor(SimStudy8$n_captured, SimStudy8$N_mean)
+
 ggplot(data = SimStudy8, mapping = aes(x = tau, y = N_mean)) +
   geom_point() +
-  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
   ggtitle("Population Estimate vs. Tau") +
   theme(plot.margin = margin(10, 10, 10, 10)) +
   xlab("Tau") +
@@ -308,7 +312,7 @@ ggsave("SimStudy8_N_mean_vs_tau.png", device = "png", dpi = 300)
 SimStudy8_pa <- subset(summary_stats_SimStudy8, (N_actual >= 75 & N_actual <= 200) & (nsites == 25) & ntraps == 3)
 ggplot(data = SimStudy8_pa, mapping = aes(x = pa_detects, y = N_mean)) +
   geom_point() +
-  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
   ggtitle("Population Estimate vs. Presence-Absence Detections") +
   xlab("Total Presence-Absence Detections") +
   ylab("Population Estimate") +
@@ -317,7 +321,7 @@ ggsave("SimStudy8_N_mean_vs_pa_detects.png", device = "png", dpi = 300)
 
 ggplot(data = SimStudy8_pa, mapping = aes(x = n_captured, y = pa_detects)) +
   geom_point() +
-  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
   ggtitle("Number Captured vs. Presence-Absence Detections") +
   theme(plot.margin = margin(10, 10, 10, 10)) +
   xlab("Presence-Absence Detections") +
@@ -327,7 +331,7 @@ ggsave("SimStudy8_pa_detections_vs_n_captured.png", device = "png", dpi = 300)
 
 ggplot(data = SimStudy8, mapping = aes(x = tau, y = sd_bias)) +
   geom_point() +
-  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
   ggtitle("Standard Deviation Bias vs. Tau") +
   theme(plot.margin = margin(10, 10, 10, 10)) +
   xlab("Tau") +
@@ -338,7 +342,7 @@ ggsave("SimStudy8_sd_bias_vs_tau.png", device = "png", dpi = 300)
 
 ggplot(data = SimStudy8, mapping = aes(x = n_captured / N_actual, y = sd_bias)) +
   geom_point() +
-  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
   ggtitle("Standard Deviation Bias vs. Population Proportion Captured") +
   theme(plot.margin = margin(10, 10, 10, 10)) +
   xlab("Population Proportion Captured") +
@@ -349,7 +353,7 @@ ggsave("SimStudy8_sd_bias_pop_prop.png", device = "png", dpi = 300)
 
 ggplot(data = SimStudy8, mapping = aes(x = tau, y = psi0_mean)) +
   geom_point() +
-  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
   ggtitle("Psi mean vs. Tau") +
   theme(plot.margin = margin(10, 10, 10, 10)) +
   xlab("Tau") +
