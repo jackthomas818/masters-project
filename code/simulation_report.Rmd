@@ -274,6 +274,17 @@ ggplot(data = SimStudy8, mapping = aes(x = n_captured / N_actual, y = credible_p
 ggsave("SimStudy8_credible_proportion_vs_pop_prop.png", device = "png", dpi = 300)
 
 
+ggplot(data = SimStudy8, mapping = aes(x = tau, y = credible_width)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
+  ggtitle("Credible Interval Width vs. Tau") +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab("Tau") +
+  ylab("Credible Interval Width")
+ggsave("SimStudy8_cred_width_vs_tau.png", device = "png", dpi = 300)
+
+
+
 ggplot(data = SimStudy8, mapping = aes(x = n_captured, y = N_mean)) +
   geom_point() +
   facet_wrap(vars(N_actual), scales = "free", labeller = label_both) +
@@ -344,7 +355,6 @@ ggplot(data = SimStudy8, mapping = aes(x = tau, y = psi0_mean)) +
   xlab("Tau") +
   ylab("Psi Mean")
 ggsave("SimStudy8_psi0_mean_tau.png", device = "png", dpi = 300)
-
 ```
 
 # Fifth Simulation
