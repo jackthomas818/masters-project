@@ -41,8 +41,9 @@ directory <- args[1]
 reps <- strtoi(args[2])
 
 
-# directory <- "SimStudy9"
-# reps <- 20
+
+# directory <- "SimStudy8"
+# reps <- 50
 
 # parameter matrix from generate_parameter_matrix.R
 params_matrix <- read.csv(paste0(directory, "/parameter_matrix.csv"))
@@ -165,7 +166,9 @@ all_data <- data.frame(cbind(
   N_sd, N_naive_se, nsample_pa, nsample_cap, psi0_mean, psi0_lower_95,
   psi0_upper_95, psi0_sd, psi0_naive_se, seed
 ))
-# all_data <- read.csv("all_data_SimStudy8.csv")
+
+
+# all_data <- read.csv("D://Data//masters-project//code//all_data_SimStudy8.csv")
 
 
 # directory <- "SimStudy8"
@@ -189,6 +192,7 @@ summary_stats <- all_data[, list(
   nsample_cap = mean(nsample_cap),
   N_naive_se = mean(N_naive_se),
   credible_proportion = sum(cred_contains_actual_N, na.rm = TRUE) / reps,
+  credible_width = mean(N_upper_95 - N_lower_95),
   psi0_mean = mean(psi0_mean),
   psi0_sd = mean(psi0_sd)
 ), by = sim]
