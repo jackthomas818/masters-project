@@ -121,18 +121,18 @@ half_norm_detec <- function(d, tau) {
 #' Function that calculates the detection probabilities for each
 #' individual i and each trap j
 #'
-#' @param n number of individuals
 #' @param ntraps number of traps
 #' @param homeranges homeranges for all individuals
 #' @param traps locations of all traps
 #' @param tau movement parameter for species
+#' @param p capture probability for species
 #'
 #' @return trap_detec 2D array of detection probabilities for each individual i
 #'                    and each trap j.
 #' @export
 #'
 #' @examples
-#' trap_detec <- calc_detection(n, ntraps, homeranges, traps, tau)
+#' trap_detec <- calc_detection(n, ntraps, homeranges, traps, tau, p)
 #'
 #' # plot individuals and their camera trap detection probabilities
 #' # labelled for trap j. Blue label is individual i number.
@@ -146,7 +146,7 @@ half_norm_detec <- function(d, tau) {
 #'   text(homeranges, labels = rownames(homeranges), cex = 1, font = 2, pos = 2, col = "blue")
 #'   legend("topright", inset = c(-.5, 0), c("homerange", "camera trap"), cex = .8, col = c("black", "red"), pch = c(1, 15))
 #' }
-calc_detection <- function(ntraps, homeranges, traps, tau) {
+calc_detection <- function(ntraps, homeranges, traps, tau, p) {
   n <- nrow(homeranges)
   # 2D matrix of detection probabilities for each
   # individual i and each trap j
@@ -161,7 +161,7 @@ calc_detection <- function(ntraps, homeranges, traps, tau) {
       # calculate probability of detection
       detec_prob <- half_norm_detec(d, tau)
 
-      trap_detec[i, j] <- detec_prob
+      trap_detec[i, j] <- p * detec_prob
     }
   }
   return(trap_detec)
