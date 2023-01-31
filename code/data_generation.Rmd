@@ -79,6 +79,7 @@ Simulating the interactions of individuals with the traps over the study
 period. 
 
 ```{r CR-interactions}
+set.seed(5351)
 nsample_cap <- 5
 camera_trap_full <- sim_trap_interac(homeranges, ntraps, nsample_cap, trap_detec)
 
@@ -118,8 +119,16 @@ text(homeranges, labels = rownames(homeranges), cex = 1.5, font = 2, pos = 3)
 ```{r plots}
 library(gplots)
 set.seed(1235)
+# number of sampling occasions
 nsample_pa <- 7
-presence_absence <- sim_presence_absence(nsites, nsample_pa, homeranges, regions, tau)
+
+# marker deposition rate
+sigma <- 2
+
+# time between sampling occasions
+delta <- 2
+
+presence_absence <- sim_presence_absence(nsites, nsample_pa, homeranges, regions, tau, sigma, delta)
 par(pty = "s")
 gen_heatmap(presence_absence, nsites)
 
@@ -157,13 +166,22 @@ tau <- 0.25
 # number of camera traps
 ntraps <- 3
 
+# species capture probability
+p <- 0.6
+
+# marker deposition rate
+sigma <- 2
+
+# time between sampling occasions (presence-absence)
+delta <- 2
+
 # homeranges for the n individuals
 homeranges <- create_homeranges(n)
 
-capture_hist <- generate_capture_hist(ntraps, nsample_cap, tau, homeranges)
+capture_hist <- generate_capture_hist(ntraps, nsample_cap, tau, p, homeranges)
 capture_hist
 
-presence_absence <- generate_presence_absence(nsites, nsample_pa, tau, homeranges)
+presence_absence <- generate_presence_absence(nsites, nsample_pa, tau, sigma, delta, homeranges)
 presence_absence
 ```
 

@@ -346,13 +346,15 @@ calc_prop <- function(x, y, x0, x1, y0, y1, tau) {
 #' @param regions the subareas of the study area, as 2D array of [x0,x1,y0,y1]
 #'                bounding boxes
 #' @param tau the movement parameter for the species, higher is more movement
+#' @param sigma the marker deposition rate (integer)
+#' @param delta the time between sampling occasions (integer)
 #'
 #' @return presence_absence a 2D array (nsites rows by nsample_pa columns)
 #'         of 0s and 1s where 1 indicates a detection for a site and a period.
 #' @export
 #'
 #' @examples
-sim_presence_absence <- function(nsites, nsample_pa, homeranges, regions, tau) {
+sim_presence_absence <- function(nsites, nsample_pa, homeranges, regions, tau, sigma, delta) {
 
   # simulate presence-absence data for each region for each period nsample_occ
 
@@ -374,7 +376,8 @@ sim_presence_absence <- function(nsites, nsample_pa, homeranges, regions, tau) {
       y1 <- regions[i, 4]
 
       prop <- calc_prop(x, y, x0, x1, y0, y1, tau)
-      indi_props[i, j] <- prop
+      # P(presence detection) = P(Z_{ij}>0)
+      indi_props[i, j] <- 1 - exp(-sigma * delta * prop)
     }
 
     # run simulation for presence-absence data
@@ -440,11 +443,11 @@ gen_heatmap <- function(presence_absence, nsites) {
 #' Function that generates the capture history array. Uses camera traps to
 #' be the capture-recapture method.
 #'
-#' @param n number of individuals to simulate
 #' @param ntraps number of camera traps to place in study area
 #' @param nsample_cap number of capture-recapture sampling occasions
 #' @param tau movement parameter of species
 #' @param homeranges array of homerange centers for all individuals
+#' @param p the species capture probability
 #'
 #' @return capture_hist a 2D array (n rows by nsample_cap columns) of
 #'         the capture history for each individual, where 1 indicates a
@@ -453,11 +456,11 @@ gen_heatmap <- function(presence_absence, nsites) {
 #'
 #' @examples
 #' capture_hist <- generate_capture_hist(10, 3, 5, 0.3, homeranges)
-generate_capture_hist <- function(ntraps, nsample_cap, tau, homeranges) {
+generate_capture_hist <- function(ntraps, nsample_cap, tau, p, homeranges) {
   # place camera traps in study area
   traps <- define_traps(ntraps)
   # calculate the probabilities of detection for each individual by each trap
-  trap_detec <- calc_detection(ntraps, homeranges, traps, tau)
+  trap_detec <- calc_detection(ntraps, homeranges, traps, tau, p)
   # generate the 3D array of which individual (i) was seen by which trap (j) at each period (k)
   camera_trap_full <- sim_trap_interac(homeranges, ntraps, nsample_cap, trap_detec)
   # collapse the jth dimension to obtain the capture history for each individual
@@ -475,19 +478,21 @@ generate_capture_hist <- function(ntraps, nsample_cap, tau, homeranges) {
 #' @param nsample_pa number of presence-absence sampling occasions
 #' @param homeranges array of homerange centers for all individuals
 #' @param tau movement parameter of species
+#' @param sigma the marker deposition rate
+#' @param delta the time between sampling occasions
 #'
 #' @return presence_absence a 2D array (nsites rows by nsample_pa columns)
 #'         of 0s and 1s where 1 indicates a detection for a site on a period.
 #' @export
 #'
 #' @examples
-generate_presence_absence <- function(nsites, nsample_pa, tau, homeranges) {
+generate_presence_absence <- function(nsites, nsample_pa, tau, sigma, delta, homeranges) {
 
   # setup the study area grid
   regions <- setup_grid(nsites)
 
   # simulate the presence-absence data
-  presence_absence <- sim_presence_absence(nsites, nsample_pa, homeranges, regions, tau)
+  presence_absence <- sim_presence_absence(nsites, nsample_pa, homeranges, regions, tau, sigma, delta)
 
   return(presence_absence)
 }
