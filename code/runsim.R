@@ -56,6 +56,15 @@ tau <- as.double(params["tau"])
 # number of camera traps
 ntraps <- as.integer(params["ntraps"])
 
+# species capture probability
+p <- as.double(params["p"])
+
+# marker deposition rate
+sigma <- as.integer(params["sigma"])
+
+# time between sampling occasions
+delta <- as.integer(params["delta"])
+
 for (rep in 1:reps) {
   # setting seed
   seed <- as.integer(1e7 * runif(1))
@@ -66,11 +75,13 @@ for (rep in 1:reps) {
   # homeranges for the n individuals
   homeranges <- create_homeranges(n_total)
 
-  capture_hist <- generate_capture_hist(ntraps, nsample_cap, tau, homeranges)
-  capture_hist
+  capture_hist <- generate_capture_hist(ntraps, nsample_cap, tau, p, homeranges)
+  print("capture_hist:")
+  print(capture_hist)
 
-  presence_absence <- generate_presence_absence(nsites, nsample_pa, tau, homeranges)
-  presence_absence
+  presence_absence <- generate_presence_absence(nsites, nsample_pa, tau, sigma, delta, homeranges)
+  print("presence_absence:")
+  print(presence_absence)
 
   output_data(presence_absence, capture_hist, paste0(task_id_str, "-", rep))
 
