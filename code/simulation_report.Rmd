@@ -322,10 +322,10 @@ ggsave("SimStudy8_N_mean_vs_pa_detects.png", device = "png", dpi = 300)
 ggplot(data = SimStudy8_pa, mapping = aes(x = n_captured, y = pa_detects)) +
   geom_point() +
   facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
-  ggtitle("Number Captured vs. Presence-Absence Detections") +
+  ggtitle("Presence-Absence Detections vs. Number Captured") +
   theme(plot.margin = margin(10, 10, 10, 10)) +
-  xlab("Presence-Absence Detections") +
-  ylab("Number Captured")
+  xlab("Number Captured") +
+  ylab("Presence-Absence Detections")
 ggsave("SimStudy8_pa_detections_vs_n_captured.png", device = "png", dpi = 300)
 
 
@@ -359,6 +359,21 @@ ggplot(data = SimStudy8, mapping = aes(x = tau, y = psi0_mean)) +
   xlab("Tau") +
   ylab("Psi Mean")
 ggsave("SimStudy8_psi0_mean_tau.png", device = "png", dpi = 300)
+
+SimStudy8_N_actual <- subset(summary_stats_SimStudy8, (nsites == 25) & ntraps == 3)
+
+var_color = "tau"
+
+ggplot(data = SimStudy8_N_actual, mapping = aes(x = N_actual, y = N_mean, color=get(var_color))) +
+  geom_point() +
+  ggtitle("Population Estimate vs. Actual Population") +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab("Actual Population") +
+  ylab("Population Estimate") +
+  guides(color = guide_legend(title = var_color))
+ggsave("SimStudy8_N_mean_vs_N_actual.png", device = "png", dpi = 300)
+
+
 ```
 
 # Fifth Simulation
