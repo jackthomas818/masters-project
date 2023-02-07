@@ -69,6 +69,9 @@ psi0_lower_95 <- array(data = NA, dim = nrow(params_matrix) * reps)
 psi0_upper_95 <- array(data = NA, dim = nrow(params_matrix) * reps)
 psi0_sd <- array(data = NA, dim = nrow(params_matrix) * reps)
 psi0_naive_se <- array(data = NA, dim = nrow(params_matrix) * reps)
+p <- array(data = NA, dim = nrow(params_matrix) * reps)
+sigma <- array(data = NA, dim = nrow(params_matrix) * reps)
+delta <- array(data = NA, dim = nrow(params_matrix) * reps)
 seed <- array(data = NA, dim = nrow(params_matrix) * reps)
 
 # parameter for older simulations that use old format
@@ -150,6 +153,9 @@ for (task_id in 1:nrow(params_matrix)) {
     N_actual[count] <- unlist(params_matrix["N"])[task_id]
     nsample_pa[count] <- unlist(params_matrix["nsample_pa"])[task_id]
     nsample_cap[count] <- unlist(params_matrix["nsample_cap"])[task_id]
+    p[count] <- unlist(params_matrix["p"])[task_id]
+    sigma[count] <- unlist(params_matrix["sigma"])[task_id]
+    delta[count] <- unlist(params_matrix["delta"])[task_id]
 
     count <- count + 1
   }
@@ -164,7 +170,7 @@ all_data <- data.frame(cbind(
   sim, N_actual, N_mean, N_bias, n_captured, tau, nsites, ntraps,
   pa_detects_total, N_lower_95, N_upper_95, cred_contains_actual_N,
   N_sd, N_naive_se, nsample_pa, nsample_cap, psi0_mean, psi0_lower_95,
-  psi0_upper_95, psi0_sd, psi0_naive_se, seed
+  psi0_upper_95, psi0_sd, psi0_naive_se, p, sigma, delta, seed
 ))
 
 
@@ -194,7 +200,10 @@ summary_stats <- all_data[, list(
   credible_proportion = sum(cred_contains_actual_N, na.rm = TRUE) / reps,
   credible_width = mean(N_upper_95 - N_lower_95),
   psi0_mean = mean(psi0_mean),
-  psi0_sd = mean(psi0_sd)
+  psi0_sd = mean(psi0_sd),
+  p = mean(p),
+  sigma = mean(sigma),
+  delta = mean(delta)
 ), by = sim]
 
 # Output summary statistics and all_data
