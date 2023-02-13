@@ -15,7 +15,7 @@ library(readr)
 summary_stats_SimStudy4 <- read_csv("summary_stats_SimStudy4.csv")
 summary_stats_SimStudy5 <- read_csv("summary_stats_SimStudy5.csv")
 summary_stats_SimStudy7 <- read_csv("summary_stats_SimStudy7.csv")
-summary_stats_SimStudy8 <- read_csv("summary_stats_SimStudy8.csv")
+summary_stats_SimStudy8 <- read_csv("summary_stats_SimStudy8ReRun.csv")
 summary_stats_SimStudy10 <- read_csv("summary_stats_SimStudy10.csv")
 summary_stats_SimStudy12 <- read_csv("summary_stats_SimStudy12.csv")
 ```
@@ -235,11 +235,11 @@ ggsave("SimStudy7_sd_bias_vs_tau.png", device = "png")
 
 Parameters for the fourth simulation (SimStudy8) were as follows:
 
-$N \in (10, 25, 50,75,100,125,150,175,200,500,750,1000)$
+$N \in (10, 25, 50,75,100,125,150,175,200,500)$
 
 $\tau \in (0.15,0.20,0.25,0.30,0.35,0.4,0.45,0.5,0.55)$
 
-nsites $\in (16,25,36)$
+nsites $\in (8**2,9**2,10**2)$
 
 nsample_cap $=7$
 
@@ -254,12 +254,12 @@ Each simulation (1296 total) was repeated 50 times.
 
 pop_labeller <- function(x) paste0("Actual Population: ", x)
 
-SimStudy8 <- subset(summary_stats_SimStudy8, (N_actual >= 75 & N_actual <= 200) & nsites == 25 & ntraps == 5)
+SimStudy8 <- subset(summary_stats_SimStudy8, (N_actual >= 75 & N_actual <= 200) & nsites == 100 & ntraps == 6)
 
 ggplot(data = SimStudy8, mapping = aes(x = tau, y = credible_proportion)) +
   geom_point() +
   facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
-  geom_hline(yintercept = 0.95, lty = 2) +
+  geom_hline(yintercept = 0.95, lty = 2, color = "red") +
   ggtitle("Credible Proportion vs Tau") +
   theme(plot.margin = margin(10, 10, 10, 10)) +
   xlab("Tau") +
@@ -303,6 +303,7 @@ cor(SimStudy8$n_captured, SimStudy8$N_mean)
 ggplot(data = SimStudy8, mapping = aes(x = tau, y = N_mean)) +
   geom_point() +
   facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
+  geom_hline(data = SimStudy8, aes(yintercept = N_actual), lty = 2, color = "red") +
   ggtitle("Population Estimate vs. Tau") +
   theme(plot.margin = margin(10, 10, 10, 10)) +
   xlab("Tau") +
@@ -310,7 +311,7 @@ ggplot(data = SimStudy8, mapping = aes(x = tau, y = N_mean)) +
 ggsave("SimStudy8_N_mean_vs_tau.png", device = "png", dpi = 300)
 
 
-SimStudy8_pa <- subset(summary_stats_SimStudy8, (N_actual >= 75 & N_actual <= 200) & (nsites == 25) & ntraps == 3)
+SimStudy8_pa <- subset(summary_stats_SimStudy8, (N_actual >= 75 & N_actual <= 200) & (nsites == 100) & ntraps == 6)
 ggplot(data = SimStudy8_pa, mapping = aes(x = pa_detects, y = N_mean)) +
   geom_point() +
   facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
@@ -361,13 +362,14 @@ ggplot(data = SimStudy8, mapping = aes(x = tau, y = psi0_mean)) +
   ylab("Psi Mean")
 ggsave("SimStudy8_psi0_mean_tau.png", device = "png", dpi = 300)
 
-SimStudy8_N_actual <- subset(summary_stats_SimStudy8, (nsites == 25) & ntraps == 3)
+SimStudy8_N_actual <- subset(summary_stats_SimStudy8, (nsites == 100) & ntraps == 3)
 
 var_color <- "tau"
 
 ggplot(data = SimStudy8_N_actual, mapping = aes(x = N_actual, y = N_mean, color = get(var_color))) +
   geom_point() +
   ggtitle("Population Estimate vs. Actual Population") +
+  geom_abline(slope = 1, color = "red") +
   theme(plot.margin = margin(10, 10, 10, 10)) +
   xlab("Actual Population") +
   ylab("Population Estimate") +
@@ -394,7 +396,7 @@ Simulation 10 varied:
 
 ```{r fig.height = 10, fig.width = 10, results='hide', message=FALSE, warning=FALSE, echo=FALSE}
 
-SimStudy10 <- subset(summary_stats_SimStudy10, N_actual == 200)
+SimStudy10 <- subset(summary_stats_SimStudy10, N_actual == 200 & nsample_cap >= 8 & nsample_cap <= 10 & nsample_pa >= 8 & nsample_pa <= 10 & ntraps == 6)
 
 ggplot(data = SimStudy10, mapping = aes(x = tau, y = credible_proportion)) +
   geom_point() +
@@ -493,6 +495,7 @@ cor(SimStudy12$n_captured, SimStudy12$N_mean)
 
 ggplot(data = SimStudy12, mapping = aes(x = tau, y = N_mean)) +
   geom_point() +
+  geom_hline(yintercept = 500, linetype = "dashed", color = "red") +
   facet_wrap(vars(p), scales = "free", labeller = as_labeller(p_labeller)) +
   ggtitle("Population Estimate vs. Tau") +
   theme(plot.margin = margin(10, 10, 10, 10)) +
@@ -552,18 +555,28 @@ ggplot(data = SimStudy12, mapping = aes(x = tau, y = psi0_mean)) +
   ylab("Psi Mean")
 ggsave("SimStudy12_psi0_mean_tau.png", device = "png", dpi = 300)
 
-SimStudy12_p <- subset(summary_stats_SimStudy12, N_actual == 500 & (nsites == 64) & ntraps == 5)
 
-var_color <- "tau"
+SimStudy12_delta <- subset(summary_stats_SimStudy12, N_actual == 500 & nsites == 64 & ntraps == 5 & sigma == 1 & p == 0.75)
 
-ggplot(data = SimStudy12_p, mapping = aes(x = p, y = N_mean, color = get(var_color))) +
+ggplot(data = SimStudy12_delta, mapping = aes(x = n_captured, y = N_mean)) +
   geom_point() +
-  geom_hline(yintercept = 500, linetype = "dashed", color = "red") +
-  ggtitle("Population Estimate vs. Capture Probability") +
+  facet_wrap(vars(delta), scales = "free", labeller = label_both) +
+  ggtitle("Population Estimate vs. Number Captured") +
+  geom_abline(slope = 1) +
   theme(plot.margin = margin(10, 10, 10, 10)) +
-  xlab("Capture Probability") +
-  ylab("Population Estimate") +
-  guides(color = guide_legend(title = var_color)) +
-  annotate("text", x = 0.4, y = 520, label = "Actual Population")
-ggsave("SimStudy12_N_mean_vs_N_actual.png", device = "png", dpi = 300)
+  xlab("Number Captured") +
+  ylab("Population Estimate")
+ggsave("SimStudy12_N_mean_vs_n_captured_delta.png", device = "png", dpi = 300)
+
+SimStudy12_sigma <- subset(summary_stats_SimStudy12, N_actual == 500 & nsites == 64 & ntraps == 5 & delta == 1 & p == 0.75)
+
+ggplot(data = SimStudy12_sigma, mapping = aes(x = n_captured, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(sigma), scales = "free", labeller = label_both) +
+  ggtitle("Population Estimate vs. Number Captured") +
+  geom_abline(slope = 1) +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab("Number Captured") +
+  ylab("Population Estimate")
+ggsave("SimStudy12_N_mean_vs_n_captured_sigma.png", device = "png", dpi = 300)
 ```
