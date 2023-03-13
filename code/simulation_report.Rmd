@@ -11,6 +11,7 @@ output:
 knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_chunk$set(results = "hide")
 library(ggplot2)
+theme_set(theme_bw())
 library(readr)
 require(gridExtra)
 library(cowplot)
@@ -282,6 +283,7 @@ N_mean_n_captured_8 <- ggplot(data = SimStudy8, mapping = aes(x = n_captured, y 
   facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
   geom_abline(slope = 1) +
   theme(plot.margin = margin(10, 10, 10, 10)) +
+  ggtitle("A)")+
   xlab("Number Captured") +
   ylab("Population Estimate")
 ggsave("SimStudy8_N_mean_vs_n_captured.png", device = "png", dpi = 300)
@@ -476,6 +478,7 @@ N_mean_n_captured_12 <- ggplot(data = SimStudy12, mapping = aes(x = n_captured, 
   facet_wrap(vars(p), scales = "free", labeller = as_labeller(p_labeller)) +
   geom_abline(slope = 1) +
   theme(plot.margin = margin(10, 10, 10, 10)) +
+  ggtitle("B)")+
   xlab("Number Captured") +
   ylab("Population Estimate")
 ggsave("SimStudy12_N_mean_vs_n_captured.png", device = "png", dpi = 300)
@@ -544,6 +547,8 @@ ggsave("SimStudy12_psi0_mean_tau.png", device = "png", dpi = 300)
 
 
 SimStudy12_delta_sigma <- subset(summary_stats_SimStudy12, N_actual == 500 & nsites == 64 & ntraps == 5 & p == 0.75)
+
+cor(SimStudy12_delta_sigma$n_captured, SimStudy12_delta_sigma$N_mean)
 
 N_mean_n_captured_delta_sigma_12 <- ggplot(data = SimStudy12_delta_sigma, mapping = aes(x = n_captured, y = N_mean)) +
   geom_point() +
