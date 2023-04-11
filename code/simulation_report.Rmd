@@ -257,7 +257,7 @@ Each simulation (1296 total) was repeated 50 times.
 
 pop_labeller <- function(x) paste0("Actual Population: ", x)
 
-SimStudy8 <- subset(summary_stats_SimStudy8, (N_actual >= 75 & N_actual <= 200) & nsites == 100 & ntraps == 6)
+SimStudy8 <- subset(summary_stats_SimStudy8, ( N_actual == 200) & nsites == 100 & ntraps == 6)
 
 ggplot(data = SimStudy8, mapping = aes(x = tau, y = credible_proportion)) +
   geom_point() +
@@ -291,14 +291,15 @@ ggsave("SimStudy8_N_mean_vs_n_captured.png", device = "png", dpi = 300)
 cor(SimStudy8$n_captured, SimStudy8$N_mean)
 
 
+
 N_mean_tau_8 <- ggplot(data = SimStudy8, mapping = aes(x = tau, y = N_mean)) +
   geom_point() +
   facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
   geom_hline(data = SimStudy8, aes(yintercept = N_actual), lty = 2, color = "red") +
   theme(plot.margin = margin(10, 10, 10, 10)) +
   xlab("Tau") +
-  ggtitle("A)") +
   ylab("Population Estimate")
+N_mean_tau_8
 ggsave("SimStudy8_N_mean_vs_tau.png", device = "png", dpi = 300)
 
 cred_width_tau_8 <- ggplot(data = SimStudy8, mapping = aes(x = tau, y = credible_width)) +
@@ -306,19 +307,19 @@ cred_width_tau_8 <- ggplot(data = SimStudy8, mapping = aes(x = tau, y = credible
   facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
   theme(plot.margin = margin(10, 10, 10, 10)) +
   xlab("Tau") +
-  ggtitle("B)") +
   ylab("Credible Interval Width")
+cred_width_tau_8
 ggsave("SimStudy8_cred_width_vs_tau.png", device = "png", dpi = 300)
 
 
 ggsave("SimStudy8_N_mean_cred_width_tau.png", arrangeGrob(N_mean_tau_8, cred_width_tau_8))
 
-SimStudy8_pa <- subset(summary_stats_SimStudy8, (N_actual >= 75 & N_actual <= 200) & (nsites == 100) & ntraps == 6)
+
+SimStudy8_pa <- subset(summary_stats_SimStudy8, (N_actual == 200) & (nsites == 100) & ntraps == 6)
 N_mean_pa_detects_8 <- ggplot(data = SimStudy8_pa, mapping = aes(x = pa_detects, y = N_mean)) +
   geom_point() +
   facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
   xlab("Presence-Absence Detections") +
-  ggtitle("A)") +
   ylab("Population Estimate") +
   theme(plot.margin = margin(10, 20, 10, 10))
 ggsave("SimStudy8_N_mean_vs_pa_detects.png", device = "png", dpi = 300)
@@ -328,7 +329,6 @@ pa_detects_n_captured_8 <- ggplot(data = SimStudy8_pa, mapping = aes(x = pa_dete
   facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
   theme(plot.margin = margin(10, 10, 10, 10)) +
   xlab("Presence-Absence Detections") +
-  ggtitle("B)") +
   ylab("Number Captured")
 ggsave("SimStudy8_pa_detections_vs_n_captured.png", device = "png", dpi = 300)
 
