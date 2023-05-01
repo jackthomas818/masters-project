@@ -7,7 +7,9 @@ output: pdf_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
-source("data_generation_funcs.R")
+# install.packages("devtools")
+# devtools::install_github("jackthomas818/simtrapoccR")
+library(simtrapoccR)
 ```
 
 Data generation for Blanc et al. model.
@@ -130,7 +132,7 @@ delta <- 2
 
 presence_absence <- sim_presence_absence(nsites, nsample_pa, homeranges, regions, tau, sigma, delta)
 par(pty = "s")
-gen_heatmap(presence_absence, nsites)
+# gen_heatmap(presence_absence, nsites)
 
 # plot grid cells on study area with homerange centers and individuals labeled
 par(pty = "s")
