@@ -2,6 +2,9 @@
 library(coda)
 library(rjags)
 library(tictoc)
+# install.packages("devtools")
+# devtools::install_github("jackthomas818/simtrapoccR")
+library(simtrapoccR)
 
 # R script for running a simulation study. Uses a parameter matrix
 # created by generate_parameter_matrix.R. Takes the task id as a command
@@ -15,9 +18,6 @@ library(tictoc)
 tic()
 
 print("finished loading libraries")
-
-# source files
-source("./data_generation_funcs.R")
 
 args <- commandArgs(trailingOnly = TRUE)
 
