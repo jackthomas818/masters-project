@@ -1,6 +1,6 @@
 # Masters Project
 
-This repository contains all the code required to run my masters project:
+This repository contains all the code required to run my [masters project](Jack_Masters_Project.pdf):
 
 ```
 Jack Thomas: "Response to Improving abundance estimation by combining capture-recapture and presence-absence data: example with a large carnivore"
