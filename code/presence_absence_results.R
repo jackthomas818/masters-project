@@ -20,7 +20,8 @@ sim12 %>%
   facet_grid(tau ~ .) + 
   geom_hline(aes(yintercept = N_actual)) +
   xlab(TeX("$\\sigma\\delta$")) +
-  ylab("Mean Estimated Population Size")
+  ylab("Mean Estimated Population Size") + 
+  scale_y_continuous(breaks = c(250,500))
 
 dev.copy2pdf(file="Figures/presence_absence_1.pdf", width = 6, height = 5)
 dev.off()
