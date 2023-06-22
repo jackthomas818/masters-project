@@ -252,9 +252,9 @@ Each simulation (1296 total) was repeated 50 times.
 
 
 ```{r fig.height = 10, fig.width = 10, results='hide', message=FALSE, warning=FALSE, echo=FALSE}
-pop_labeller <- function(x) paste0("Actual Population: ", x)
+pop_labeller <- function(x) paste0("True Population: ", x)
 
-SimStudy8 <- subset(summary_stats_SimStudy8, (N_actual == 200) & nsites == 100 & ntraps == 6)
+SimStudy8 <- subset(summary_stats_SimStudy8, N_actual <= 200 & N_actual >= 75 & nsites == 100 & ntraps == 6)
 
 ggplot(data = SimStudy8, mapping = aes(x = tau, y = credible_proportion)) +
   geom_point() +
@@ -368,7 +368,7 @@ ggplot(data = SimStudy8_N_actual, mapping = aes(x = N_actual, y = N_mean, color 
   geom_point() +
   geom_abline(slope = 1, color = "red") +
   theme(plot.margin = margin(10, 10, 10, 10)) +
-  xlab("Actual Population") +
+  xlab("True Population") +
   ylab("Population Estimate") +
   guides(color = guide_legend(title = var_color))
 ggsave("SimStudy8_N_mean_vs_N_actual.png", device = "png", dpi = 300)
@@ -551,10 +551,10 @@ SimStudy12_delta_sigma <- subset(summary_stats_SimStudy12, N_actual == 500 & nsi
 
 delta_sigma_labeller <- function(variable, value) {
   if (variable == "delta") {
-    value <- paste0("\u03B4 = ",value) # Delta symbol in Unicode
+    value <- paste0("\u03B4 = ", value) # Delta symbol in Unicode
   }
   if (variable == "sigma") {
-    value <- paste0("\u03C3 = ",value) # Sigma symbol in Unicode
+    value <- paste0("\u03C3 = ", value) # Sigma symbol in Unicode
   }
   return(value)
 }
