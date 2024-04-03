@@ -22,6 +22,25 @@ summary_stats_SimStudy7 <- read_csv("summary_stats_SimStudy7.csv")
 summary_stats_SimStudy8 <- read_csv("summary_stats_SimStudy8ReRun.csv")
 summary_stats_SimStudy10 <- read_csv("summary_stats_SimStudy10.csv")
 summary_stats_SimStudy12 <- read_csv("summary_stats_SimStudy12.csv")
+
+# Updated function to output a sorted LaTeX table
+output_latex_table <- function(data, sort_column, decreasing = FALSE) {
+  # Ensure the column name is correctly interpreted for sorting
+  sort_column_sym <- sym(sort_column)
+  
+  # Sort the data frame by the specified column, correctly handling the column name
+  if (decreasing) {
+    sorted_data <- data %>% arrange(desc(!!sort_column_sym))
+  } else {
+    sorted_data <- data %>% arrange(!!sort_column_sym)
+  }
+  
+  # Convert the sorted data frame to a LaTeX table
+  latex_table <- xtable(sorted_data)
+  
+  # Print the LaTeX table, customize here as needed
+  print(latex_table, include.rownames = FALSE, floating = FALSE)
+}
 ```
 
 # Simulation Study Report
@@ -254,7 +273,16 @@ Each simulation (1296 total) was repeated 50 times.
 ```{r fig.height = 10, fig.width = 10, results='hide', message=FALSE, warning=FALSE, echo=FALSE}
 pop_labeller <- function(x) paste0("True Population: ", x)
 
+library(dplyr)
+library(xtable)
+
 SimStudy8 <- subset(summary_stats_SimStudy8, N_actual <= 200 & N_actual >= 75 & nsites == 100 & ntraps == 6)
+
+subset_summary_stats <- summary_stats_SimStudy8[,c("N_mean", "N_actual", "n_captured","tau","nsites", "pa_detects", "ntraps")]
+
+sample_stratified <- subset_summary_stats %>% sample_n(size=min(25,n()), replace=TRUE) %>% ungroup()
+
+output_latex_table(sample_stratified, "N_actual")
 
 ggplot(data = SimStudy8, mapping = aes(x = tau, y = credible_proportion)) +
   geom_point() +
@@ -443,6 +471,12 @@ ggsave("SimStudy10_sd_bias_vs_tau.png", device = "png", dpi = 300)
 p_labeller <- function(x) paste0("Capture Probability: ", x)
 
 SimStudy12 <- subset(summary_stats_SimStudy12, N_actual == 500 & nsites == 64 & ntraps == 5 & delta == 1 & sigma == 1)
+
+subset_summary_stats <- summary_stats_SimStudy12[,c("N_mean", "N_actual", "n_captured","tau", "pa_detects", "sigma", "delta")]
+
+sample_stratified <- subset_summary_stats %>% sample_n(size=min(25,n()), replace=TRUE) %>% ungroup()
+
+output_latex_table(sample_stratified, "N_actual")
 
 cred_prop_tau_12 <- ggplot(data = SimStudy12, mapping = aes(x = tau, y = credible_proportion)) +
   geom_point() +

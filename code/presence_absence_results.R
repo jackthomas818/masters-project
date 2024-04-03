@@ -1,6 +1,9 @@
 # Load packages
 library(tidyverse)
 library(latex2exp)
+library(ggplot2)
+
+theme_set(theme_bw())
 
 # Load simulation summaries
 sim12 <- read_csv("summary_stats_SimStudy12.csv") %>%
