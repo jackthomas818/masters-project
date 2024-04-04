@@ -13,7 +13,7 @@ pars_mat <- crossing(
   nsites = 8**2,
   nsample_cap = 7,
   nsample_pa = 5,
-  ntraps = 5,
+  ntraps = c(5,15,30),
   p = c(0.1, 0.25, 0.5, 0.75),
   sigma = 1,
   delta = c(1, 4, 8, 16)
