@@ -154,8 +154,7 @@ for (task_id in 1:nrow(params_matrix)) {
     nsample_pa[count] <- unlist(params_matrix["nsample_pa"])[task_id]
     nsample_cap[count] <- unlist(params_matrix["nsample_cap"])[task_id]
     p[count] <- unlist(params_matrix["p"])[task_id]
-    sigma[count] <- unlist(params_matrix["sigma"])[task_id]
-    delta[count] <- unlist(params_matrix["delta"])[task_id]
+    delta[count] <- unlist(params_matrix["delta"])[task_id] * unlist(params_matrix["sigma"])[task_id]
 
     count <- count + 1
   }
@@ -202,7 +201,6 @@ summary_stats <- all_data[, list(
   psi0_mean = mean(psi0_mean),
   psi0_sd = mean(psi0_sd),
   p = mean(p),
-  sigma = mean(sigma),
   delta = mean(delta)
 ), by = sim]
 

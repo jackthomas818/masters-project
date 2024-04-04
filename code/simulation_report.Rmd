@@ -302,8 +302,9 @@ ggplot(data = SimStudy8, mapping = aes(x = n_captured / N_actual, y = credible_p
   ylab("Credible Proportion")
 ggsave("SimStudy8_credible_proportion_vs_pop_prop.png", device = "png", dpi = 300)
 
+SimStudy8_one_N <- subset(SimStudy8, N_actual==200)
 
-N_mean_n_captured_8 <- ggplot(data = SimStudy8, mapping = aes(x = n_captured, y = N_mean)) +
+N_mean_n_captured_8 <- ggplot(data = SimStudy8_one_N, mapping = aes(x = n_captured, y = N_mean)) +
   geom_point() +
   facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
   geom_abline(slope = 1) +
@@ -317,17 +318,17 @@ cor(SimStudy8$n_captured, SimStudy8$N_mean)
 
 
 
-N_mean_tau_8 <- ggplot(data = SimStudy8, mapping = aes(x = tau, y = N_mean)) +
+N_mean_tau_8 <- ggplot(data = SimStudy8_one_N, mapping = aes(x = tau, y = N_mean)) +
   geom_point() +
   facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
-  geom_hline(data = SimStudy8, aes(yintercept = N_actual), lty = 2, color = "red") +
+  geom_hline(data = SimStudy8_one_N, aes(yintercept = N_actual), lty = 2, color = "red") +
   theme(plot.margin = margin(10, 10, 10, 10)) +
   xlab(TeX("$\\tau$")) +
   ylab("Population Estimate")
 N_mean_tau_8
 ggsave("SimStudy8_N_mean_vs_tau.png", device = "png", dpi = 300)
 
-cred_width_tau_8 <- ggplot(data = SimStudy8, mapping = aes(x = tau, y = credible_width)) +
+cred_width_tau_8 <- ggplot(data = SimStudy8_one_N, mapping = aes(x = tau, y = credible_width)) +
   geom_point() +
   facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
   theme(plot.margin = margin(10, 10, 10, 10)) +
@@ -474,6 +475,13 @@ SimStudy12 <- subset(summary_stats_SimStudy12, N_actual == 500 & nsites == 64 & 
 
 subset_summary_stats <- summary_stats_SimStudy12[,c("N_mean", "N_actual", "n_captured","tau", "pa_detects", "sigma", "delta")]
 
+subset_summary_stats <- subset_summary_stats %>% mutate("delta"=sigma*delta)
+
+subset_summary_stats <- subset_summary_stats[,c("N_mean", "N_actual", "n_captured","tau", "pa_detects", "delta")]
+
+subset_summary_stats <- subset(subset_summary_stats, delta == 1 | delta==4 | delta==8 | delta==16)
+
+
 sample_stratified <- subset_summary_stats %>% sample_n(size=min(25,n()), replace=TRUE) %>% ungroup()
 
 output_latex_table(sample_stratified, "N_actual")
@@ -506,8 +514,9 @@ ggplot(data = SimStudy12, mapping = aes(x = tau, y = credible_width)) +
 ggsave("SimStudy12_cred_width_vs_tau.png", device = "png", dpi = 300)
 
 
+SimStudy12_one_p <- subset(SimStudy12, p==0.25)
 
-N_mean_n_captured_12 <- ggplot(data = SimStudy12, mapping = aes(x = n_captured, y = N_mean)) +
+N_mean_n_captured_12 <- ggplot(data = SimStudy12_one_p, mapping = aes(x = n_captured, y = N_mean)) +
   geom_point() +
   facet_wrap(vars(p), scales = "free", labeller = as_labeller(p_labeller)) +
   geom_abline(slope = 1) +
@@ -595,9 +604,9 @@ delta_sigma_labeller <- function(variable, value) {
 
 cor(SimStudy12_delta_sigma$n_captured, SimStudy12_delta_sigma$N_mean)
 
-N_mean_n_captured_delta_sigma_12 <- ggplot(data = SimStudy12_delta_sigma, mapping = aes(x = n_captured, y = N_mean)) +
+N_mean_n_captured_delta_sigma_12 <- ggplot(data = subset_summary_stats, mapping = aes(x = n_captured, y = N_mean)) +
   geom_point() +
-  facet_wrap(vars(delta, sigma), scales = "free", labeller = delta_sigma_labeller) +
+  facet_wrap(vars(delta), scales = "free", labeller = delta_sigma_labeller) +
   geom_abline(slope = 1) +
   theme(plot.margin = margin(10, 10, 10, 10)) +
   xlab("Number Captured") +
