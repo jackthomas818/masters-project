@@ -21,4 +21,4 @@ pars_mat <- crossing(
   rowid_to_column("sim") %>%
   rowid_to_column("task")
 
-write_csv(pars_mat, "./parameter_matrix.csv")
+write_csv(pars_mat, "./parameter_matrix_B.csv")
