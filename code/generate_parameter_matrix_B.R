@@ -15,8 +15,8 @@ pars_mat <- crossing(
   nsample_pa = 5,
   ntraps = 5,
   p = c(0.1, 0.25, 0.5, 0.75),
-  sigma = c(1, 2, 3, 4),
-  delta = c(1, 2, 3, 4)
+  sigma = 1,
+  delta = c(1, 4, 8, 16)
 ) %>%
   rowid_to_column("sim") %>%
   rowid_to_column("task")
