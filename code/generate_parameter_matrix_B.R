@@ -9,7 +9,7 @@ debug <- FALSE
 ## Define simulation parameters
 pars_mat <- crossing(
   N = c(10, 500),
-  tau = c(0.15, 0.20, 0.25, 0.30, 0.35, 0.4, 0.45, 0.5, 0.55),
+  tau = c(0.15, 0.25, 0.35, 0.45, 0.55),
   nsites = 8**2,
   nsample_cap = 7,
   nsample_pa = 5,
@@ -22,3 +22,4 @@ pars_mat <- crossing(
   rowid_to_column("task")
 
 write_csv(pars_mat, "./parameter_matrix_B.csv")
+
