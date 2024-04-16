@@ -1,0 +1,369 @@
+---
+title: "Simulation Report"
+author: "Jack Thomas"
+date: '2022-08-30'
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(results = "hide")
+library(ggplot2)
+theme_set(theme_bw())
+library(readr)
+require(gridExtra)
+#library(cowplot)
+library(latex2exp)
+
+# Updated function to output a sorted LaTeX table
+output_latex_table <- function(data, sort_column, decreasing = FALSE) {
+  # Ensure the column name is correctly interpreted for sorting
+  sort_column_sym <- sym(sort_column)
+  
+  # Sort the data frame by the specified column, correctly handling the column name
+  if (decreasing) {
+    sorted_data <- data %>% arrange(desc(!!sort_column_sym))
+  } else {
+    sorted_data <- data %>% arrange(!!sort_column_sym)
+  }
+  
+  # Convert the sorted data frame to a LaTeX table
+  latex_table <- xtable(sorted_data)
+  
+  # Print the LaTeX table, customize here as needed
+  print(latex_table, include.rownames = FALSE, floating = FALSE)
+}
+```
+
+# Case Study A
+
+Parameters for the fourth simulation (SimStudy_A) were as follows:
+
+$N \in (10, 50, 100,200,500)$
+
+$\tau \in (0.15,0.25,0.35,0.45,0.55)$
+
+nsites $\in (8**2,9**2,10**2)$
+
+nsample_cap $=7$
+
+nsample_pa $=5$
+
+ntraps $=5, 15, 30$
+
+```{r fig.height = 10, fig.width = 10, results='hide', message=FALSE, warning=FALSE, echo=FALSE}
+pop_labeller <- function(x) paste0("True Population: ", x)
+
+library(dplyr)
+library(xtable)
+
+# Load necessary output
+summary_stats_5 <- read_csv("summary_stats_SimStudy8ReRun.csv") |> 
+  filter(N_actual %in% c(10, 50 ,100, 200, 500),
+         tau %in% c(0.15,0.25,0.35,0.45,0.55),
+         ntraps == 5) 
+
+summary_stats_15 <- read_csv("summary_stats_A_15.csv") |> 
+  filter(delta == 4)
+
+summary_stats_30 <- read_csv("summary_stats_A_30.csv") |> 
+  filter(delta == 4)
+
+summary_stats_A <- bind_rows(summary_stats_5,
+                             summary_stats_15,
+                             summary_stats_30)
+
+SimStudy_A <- subset(summary_stats_A, N_actual <= 200 & N_actual >= 75 & nsites == 100 & ntraps == 5)
+
+subset_summary_stats <- summary_stats_A[,c("N_mean", "N_actual", "n_captured","tau","nsites", "pa_detects", "ntraps")]
+
+sample_stratified <- subset_summary_stats %>% sample_n(size=min(25,n()), replace=TRUE) %>% ungroup()
+
+output_latex_table(sample_stratified, "N_actual")
+
+ggplot(data = SimStudy_A, mapping = aes(x = tau, y = credible_proportion)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
+  geom_hline(yintercept = 0.95, lty = 2, color = "red") +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab(TeX("$\\tau$")) +
+  ylab("Credible Proportion")
+ggsave("SimStudy_A_credible_proportion_vs_tau.png", device = "png", dpi = 300)
+
+ggplot(data = SimStudy_A, mapping = aes(x = n_captured / N_actual, y = credible_proportion)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
+  geom_hline(yintercept = 0.95, lty = 2) +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab("Population Proportion Captured") +
+  ylab("Credible Proportion")
+ggsave("SimStudy_A_credible_proportion_vs_pop_prop.png", device = "png", dpi = 300)
+
+SimStudy_A_one_N <- subset(SimStudy_A, N_actual==200)
+
+N_mean_n_captured_A <- ggplot(data = SimStudy_A_one_N, mapping = aes(x = n_captured, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
+  geom_abline(slope = 1) +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  ggtitle("A)") +
+  xlab("Number Captured") +
+  ylab("Population Estimate")
+ggsave("SimStudy_A_N_mean_vs_n_captured.png", device = "png", dpi = 300)
+
+cor(SimStudy_A$n_captured, SimStudy_A$N_mean)
+
+
+
+N_mean_tau_A <- ggplot(data = SimStudy_A_one_N, mapping = aes(x = tau, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
+  geom_hline(data = SimStudy_A_one_N, aes(yintercept = N_actual), lty = 2, color = "red") +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab(TeX("$\\tau$")) +
+  ylab("Population Estimate")
+N_mean_tau_A
+ggsave("SimStudy_A_N_mean_vs_tau.png", device = "png", dpi = 300)
+
+cred_width_tau_A <- ggplot(data = SimStudy_A_one_N, mapping = aes(x = tau, y = credible_width)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab(TeX("$\\tau$")) +
+  ylab("Credible Interval Width")
+cred_width_tau_A
+ggsave("SimStudy_A_cred_width_vs_tau.png", device = "png", dpi = 300)
+
+
+ggsave("SimStudy_A_N_mean_cred_width_tau.png", arrangeGrob(N_mean_tau_A, cred_width_tau_A))
+
+
+SimStudy_A_pa <- subset(summary_stats_A, (N_actual == 200) & (nsites == 100) & ntraps == 5)
+N_mean_pa_detects_A <- ggplot(data = SimStudy_A_pa, mapping = aes(x = pa_detects, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
+  xlab("Presence-Absence Detections") +
+  ylab("Population Estimate") +
+  theme(plot.margin = margin(10, 20, 10, 10))
+ggsave("SimStudy_A_N_mean_vs_pa_detects.png", device = "png", dpi = 300)
+
+pa_detects_n_captured_A <- ggplot(data = SimStudy_A_pa, mapping = aes(x = pa_detects, y = n_captured)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab("Presence-Absence Detections") +
+  ylab("Number Captured")
+ggsave("SimStudy_A_pa_detections_vs_n_captured.png", device = "png", dpi = 300)
+
+ggsave("SimStudy_A_N_mean_pa_detects_n_captured.png", arrangeGrob(N_mean_pa_detects_A, pa_detects_n_captured_A))
+
+sd_bias_tau_A <- ggplot(data = SimStudy_A, mapping = aes(x = tau, y = sd_bias)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab(TeX("$\\tau$")) +
+  ggtitle("A)") +
+  ylab("Standard Deviation Bias")
+ggsave("SimStudy_A_sd_bias_vs_tau.png", device = "png", dpi = 300)
+
+
+
+sd_bias_pop_prop_A <- ggplot(data = SimStudy_A, mapping = aes(x = n_captured / N_actual, y = sd_bias)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab("Population Proportion Captured") +
+  ylab("Standard Deviation Bias")+
+  ggtitle("A)")
+ggsave("SimStudy_A_sd_bias_pop_prop.png", device = "png", dpi = 300)
+
+
+
+ggplot(data = SimStudy_A, mapping = aes(x = tau, y = psi0_mean)) +
+  geom_point() +
+  facet_wrap(vars(N_actual), scales = "free", labeller = as_labeller(pop_labeller)) +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab(TeX("$\\tau$")) +
+  ylab(TeX("$\\psi$ Mean"))
+ggsave("SimStudy_A_psi0_mean_tau.png", device = "png", dpi = 300)
+
+SimStudy_A_N_actual <- subset(summary_stats_A, (nsites == 100) & ntraps == 5)
+
+var_color <- "tau"
+
+ggplot(data = SimStudy_A_N_actual, mapping = aes(x = N_actual, y = N_mean, color = get(var_color))) +
+  geom_point() +
+  geom_abline(slope = 1, color = "red") +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab("True Population") +
+  ylab("Population Estimate") +
+  guides(color = guide_legend(title = var_color))
+ggsave("SimStudy_A_N_mean_vs_N_actual.png", device = "png", dpi = 300)
+```
+
+# Case Study B
+
+```{r fig.height = 10, fig.width = 10, results='hide', message=FALSE, warning=FALSE, echo=FALSE}
+p_labeller <- function(x) paste0("Capture Probability: ", x)
+
+summary_stats_5 <- read_csv("summary_stats_SimStudy12.csv") |> 
+  mutate(sd = sigma * delta) |> 
+  filter(tau %in% c(0.15, 0.25, 0.35, 0.45, 0.55),
+         (sigma == 1 & delta == 1) |
+           (sigma == 1 & delta == 4) |
+           (sigma == 2 & delta == 4) |
+           (sigma == 4 & delta == 4))
+
+summary_stats_15 <- read_csv("summary_stats_B_15.csv")
+
+summary_stats_30 <- read_csv("summary_stats_B_30.csv")
+
+summary_stats_B <- bind_rows(summary_stats_5,
+                             summary_stats_15,
+                             summary_stats_30)
+
+SimStudy_B <- subset(summary_stats_B, N_actual == 500 & nsites == 64 & ntraps == 5 & delta == 1 & sigma == 1)
+
+subset_summary_stats <- summary_stats_B[,c("N_mean", "N_actual", "n_captured","tau", "pa_detects", "sigma", "delta")]
+
+subset_summary_stats <- subset_summary_stats %>% mutate("delta"=sigma*delta)
+
+subset_summary_stats <- subset_summary_stats[,c("N_mean", "N_actual", "n_captured","tau", "pa_detects", "delta")]
+
+subset_summary_stats <- subset(subset_summary_stats, delta == 1 | delta==4 | delta==8 | delta==16)
+
+
+sample_stratified <- subset_summary_stats %>% sample_n(size=min(25,n()), replace=TRUE) %>% ungroup()
+
+output_latex_table(sample_stratified, "N_actual")
+
+cred_prop_tau_12 <- ggplot(data = SimStudy_B, mapping = aes(x = tau, y = credible_proportion)) +
+  geom_point() +
+  facet_wrap(vars(p), scales = "free", labeller = as_labeller(p_labeller)) +
+  geom_hline(yintercept = 0.95, lty = 2) +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab(TeX("$\\tau$")) +
+  ylab("Credible Proportion")
+ggsave("SimStudy_B_credible_proportion_vs_tau.png", device = "png", dpi = 300)
+
+ggplot(data = SimStudy_B, mapping = aes(x = n_captured / N_actual, y = credible_proportion)) +
+  geom_point() +
+  facet_wrap(vars(p), scales = "free", labeller = as_labeller(p_labeller)) +
+  geom_hline(yintercept = 0.95, lty = 2) +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab("Population Proportion Captured") +
+  ylab("Credible Proportion")
+ggsave("SimStudy_B_credible_proportion_vs_pop_prop.png", device = "png", dpi = 300)
+
+
+ggplot(data = SimStudy_B, mapping = aes(x = tau, y = credible_width)) +
+  geom_point() +
+  facet_wrap(vars(p), scales = "free", labeller = as_labeller(p_labeller)) +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab(TeX("$\\tau$")) +
+  ylab("Credible Interval Width")
+ggsave("SimStudy_B_cred_width_vs_tau.png", device = "png", dpi = 300)
+
+
+SimStudy_B_one_p <- subset(SimStudy_B, p==0.25)
+
+N_mean_n_captured_B <- ggplot(data = SimStudy_B_one_p, mapping = aes(x = n_captured, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(p), scales = "free", labeller = as_labeller(p_labeller)) +
+  geom_abline(slope = 1) +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  ggtitle("B)") +
+  xlab("Number Captured") +
+  ylab("Population Estimate")
+ggsave("SimStudy_B_N_mean_vs_n_captured.png", device = "png", dpi = 300)
+
+ggsave("N_mean_n_captured_A_B.png", arrangeGrob(N_mean_n_captured_A, N_mean_n_captured_B), height = 10)
+
+
+cor(SimStudy_B$n_captured, SimStudy_B$N_mean)
+
+ggplot(data = SimStudy_B, mapping = aes(x = tau, y = N_mean)) +
+  geom_point() +
+  geom_hline(yintercept = 500, linetype = "dashed", color = "red") +
+  facet_wrap(vars(p), scales = "free", labeller = as_labeller(p_labeller)) +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab(TeX("$\\tau$")) +
+  ylab("Population Estimate")
+ggsave("SimStudy_B_N_mean_vs_tau.png", device = "png", dpi = 300)
+
+
+SimStudy_B_pa <- subset(summary_stats_B, (N_actual == 10) & (nsites == 64) & ntraps == 5 & delta == 1 & sigma == 1)
+ggplot(data = SimStudy_B_pa, mapping = aes(x = pa_detects, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(p), scales = "free", labeller = as_labeller(p_labeller)) +
+  xlab("Total Presence-Absence Detections") +
+  ylab("Population Estimate") +
+  theme(plot.margin = margin(10, 20, 10, 10))
+ggsave("SimStudy_B_N_mean_vs_pa_detects.png", device = "png", dpi = 300)
+
+ggplot(data = SimStudy_B_pa, mapping = aes(x = n_captured, y = pa_detects)) +
+  geom_point() +
+  facet_wrap(vars(p), scales = "free", labeller = as_labeller(p_labeller)) +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab("Number Captured") +
+  ylab("Presence-Absence Detections")
+ggsave("SimStudy_B_pa_detections_vs_n_captured.png", device = "png", dpi = 300)
+
+
+sd_bias_tau_B <- ggplot(data = SimStudy_B, mapping = aes(x = tau, y = sd_bias)) +
+  geom_point() +
+  facet_wrap(vars(p), scales = "free", labeller = as_labeller(p_labeller)) +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab(TeX("$\\tau$")) +
+  ggtitle("B)") +
+  ylab("Standard Deviation Bias")
+ggsave("SimStudy_B_sd_bias_vs_tau.png", device = "png", dpi = 300)
+
+
+ggsave("sd_bias_tau_A_B.png", device = "png", dpi = 300, arrangeGrob(sd_bias_tau_A, sd_bias_tau_B))
+
+sd_bias_pop_prop_B <- ggplot(data = SimStudy_B, mapping = aes(x = n_captured / N_actual, y = sd_bias)) +
+  geom_point() +
+  facet_wrap(vars(p), scales = "free", labeller = as_labeller(p_labeller)) +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab("Population Proportion Captured") +
+  ylab("Standard Deviation Bias")+
+  ggtitle("B)")
+ggsave("SimStudy_B_sd_bias_pop_prop.png", device = "png", dpi = 300)
+
+ggsave("sd_bias_pop_prop_A_B.png", device = "png", dpi = 300, arrangeGrob(sd_bias_pop_prop_A, sd_bias_pop_prop_B))
+
+ggplot(data = SimStudy_B, mapping = aes(x = tau, y = psi0_mean)) +
+  geom_point() +
+  facet_wrap(vars(p), scales = "free", labeller = as_labeller(p_labeller)) +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab(TeX("$\\tau$")) +
+  ylab(TeX("$\\psi$ Mean"))
+ggsave("SimStudy_B_psi0_mean_tau.png", device = "png", dpi = 300)
+
+
+SimStudy_B_delta_sigma <- subset(summary_stats_B, N_actual == 500 & nsites == 64 & ntraps == 5 & p == 0.75)
+
+delta_sigma_labeller <- function(variable, value) {
+  if (variable == "delta") {
+    value <- paste0("\u03B4 = ", value) # Delta symbol in Unicode
+  }
+  if (variable == "sigma") {
+    value <- paste0("\u03C3 = ", value) # Sigma symbol in Unicode
+  }
+  return(value)
+}
+
+cor(SimStudy_B_delta_sigma$n_captured, SimStudy_B_delta_sigma$N_mean)
+
+N_mean_n_captured_delta_sigma_12 <- ggplot(data = subset_summary_stats, mapping = aes(x = n_captured, y = N_mean)) +
+  geom_point() +
+  facet_wrap(vars(delta), scales = "free", labeller = delta_sigma_labeller) +
+  geom_abline(slope = 1) +
+  theme(plot.margin = margin(10, 10, 10, 10)) +
+  xlab("Number Captured") +
+  ylab("Population Estimate")
+ggsave("SimStudy_B_N_mean_vs_n_captured_delta_sigma.png", device = "png", dpi = 300)
+```
