@@ -2,6 +2,7 @@
 library(tidyverse)
 library(latex2exp)
 library(ggplot2)
+library(dbplyr)
 
 theme_set(theme_bw())
 
@@ -22,7 +23,7 @@ sim12 %>%
   geom_point() + 
   facet_grid(tau ~ .) + 
   geom_hline(aes(yintercept = N_actual)) +
-  xlab(TeX("$\\sigma\\delta$")) +
+  xlab(TeX("$\\delta$")) +
   ylab("Mean Estimated Population Size") + 
   scale_y_continuous(breaks = c(250,500))
 
