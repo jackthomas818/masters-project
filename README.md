@@ -1,5 +1,7 @@
 # Masters Project
 
+[![DOI](https://zenodo.org/badge/485883862.svg)](https://zenodo.org/doi/10.5281/zenodo.12534261)
+
 This repository contains all the code required to run my [masters project](Jack_Masters_Project.pdf):
 
 ```
