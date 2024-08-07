@@ -1,6 +1,7 @@
 # Masters Project
 
 [![DOI](https://zenodo.org/badge/485883862.svg)](https://zenodo.org/doi/10.5281/zenodo.12534261)
+[![DOI:10.1002/2688-8319.12368](https://img.shields.io/badge/DOI-10.1002%2F2688%208319.12368-red)](https://doi.org/10.1002/2688-8319.12368)
 
 This repository contains all the code required to run my [masters project](Jack_Masters_Project.pdf):
 
